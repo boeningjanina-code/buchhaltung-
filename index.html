@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>icyanina Studio</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Studio">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f1e8d8">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Pinyon+Script&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: phone-first app shell. Fixed warm beige backdrop (soft light patches + fine glitter canvas),
+   frosted cream glass cards in the logo palette: beige, olive green, brown, one view at a time, glass bottom tab bar, bottom sheets for forms. Deliberately one light theme. */
+:root{
+  --deep:#4a2e26; --ocean:#606347; --aqua:#6d7350; --turq:#9aa173; --ice:#f6efe2;
+  --fg:#3a2620; --muted:#7a6656; --dim:#a39180; --line:rgba(74,46,38,.11); --line-strong:rgba(255,253,248,.92);
+  --panel:rgba(255,252,246,.66); --field:rgba(255,253,249,.86);
+  --in:#4f7a3a; --out:#b0563f; --warn:#9a6410; --ok:#4f7a3a; --danger:#b23a3a;
+  --in-soft:rgba(79,122,58,.13); --out-soft:rgba(176,86,63,.12); --warn-soft:rgba(196,140,40,.17); --aqua-soft:rgba(96,99,71,.13);
+  --shadow:rgba(74,46,38,.26);
+  --f-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --f-body:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-script:"Pinyon Script","Snell Roundhand","Apple Chancery",cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+svg{width:20px;height:20px;flex-shrink:0}
+html{-webkit-text-size-adjust:100%;background:#efe5d3}
+body{margin:0;min-height:100%;font:400 15px/1.45 var(--f-body);color:var(--fg);background:#efe5d3;
+  -webkit-tap-highlight-color:transparent;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- light ocean backdrop ---------- */
+.ocean{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(110% 55% at 10% -8%,rgba(255,252,244,.95),transparent 60%),
+    radial-gradient(70% 45% at 100% 10%,rgba(176,182,140,.40),transparent 65%),
+    radial-gradient(90% 60% at 50% 115%,rgba(150,110,80,.30),transparent 70%),
+    linear-gradient(180deg,#faf5ec 0%,#f1e8d8 38%,#e8dcc6 72%,#ddcdb2 100%)}
+.ocean canvas{position:absolute;inset:0;width:100%;height:100%}
+
+.app{position:relative;z-index:1;max-width:920px;margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-top:calc(env(safe-area-inset-top,0px) + 10px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 104px)}
+
+/* ---------- glass ---------- */
+.glass{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.82),rgba(255,255,255,.5) 55%,rgba(238,228,208,.45));
+  border:1px solid var(--line-strong);border-radius:24px;
+  backdrop-filter:blur(22px) saturate(160%);-webkit-backdrop-filter:blur(22px) saturate(160%);
+  box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(190,165,130,.25),0 22px 44px -26px var(--shadow);overflow:hidden}
+.glass.sheen::before{content:"";position:absolute;inset:-40% -20% auto -20%;height:120%;pointer-events:none;
+  background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55) 45%,rgba(255,246,226,.25) 52%,transparent 60%);
+  transform:translateX(-30%);animation:sheen 9s ease-in-out infinite}
+@keyframes sheen{0%,100%{transform:translateX(-35%)}50%{transform:translateX(25%)}}
+
+/* ---------- header ---------- */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 2px 14px}
+.brand{display:flex;flex-direction:column;line-height:1}
+.brand .the{font:700 .62rem var(--f-body);letter-spacing:.32em;color:var(--ocean);margin-left:2px}
+.brand .word{display:flex;align-items:baseline;gap:4px}
+.brand .icy{font:700 1.7rem var(--f-display);letter-spacing:-.01em;color:#4a2e26}
+.brand .studio{font:400 1.6rem var(--f-script);color:#606347;transform:translateY(4px)}
+.icon-btn{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line-strong);color:var(--deep);
+  background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 8px 18px -12px var(--shadow);flex-shrink:0}
+.icon-btn svg{width:20px;height:20px}
+
+.view{display:flex;flex-direction:column;gap:16px}
+.view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.view-head h1{margin:0;font:700 1.75rem/1.1 var(--f-display);letter-spacing:-.01em;color:var(--deep)}
+.view-head .sub{color:var(--muted);font-size:.85rem;margin-top:2px}
+h2.sec{margin:6px 2px 0;font:700 .72rem var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;color:var(--deep);
+  border:1px solid var(--line-strong);background:rgba(255,255,255,.7);box-shadow:0 8px 18px -14px var(--shadow);font-weight:700;font-size:.9rem;white-space:nowrap}
+.btn svg{width:18px;height:18px;flex-shrink:0}
+.btn.primary{color:#fff;background:rgba(96,99,71,.84);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border:1px solid rgba(255,255,255,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -3px 8px rgba(40,30,20,.18),inset 0 10px 14px -10px rgba(255,255,255,.35),0 12px 24px -12px rgba(74,46,38,.55)}
+.btn.danger{color:var(--danger);border-color:rgba(178,58,58,.35);background:rgba(255,255,255,.6)}
+.btn.danger.armed{background:var(--danger);color:#fff;border-color:transparent}
+.btn.small{min-height:36px;padding:0 12px;font-size:.8rem}
+.btn.block{width:100%}
+.btn:disabled{opacity:.5}
+.linklike{background:none;border:none;color:var(--ocean);font-weight:700;padding:4px 2px}
+
+.add-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.add-btn{display:flex;align-items:center;gap:12px;padding:16px;border-radius:22px;text-align:left;border:1px solid var(--line-strong);min-height:76px;color:var(--fg)}
+.add-btn .plus{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex-shrink:0;color:#fff}
+.add-btn .plus svg{width:22px;height:22px}
+.add-btn .plus{background:rgba(96,99,71,.84);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border:1px solid rgba(255,255,255,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -3px 8px rgba(40,30,20,.18),inset 0 10px 14px -10px rgba(255,255,255,.35),0 8px 18px -8px rgba(96,99,71,.7)}
+.add-btn b{display:block;font-size:.98rem;line-height:1.2}
+.add-btn span.s{font-size:.75rem;color:var(--muted)}
+
+/* ---------- stats ---------- */
+.hero{padding:18px 18px 16px;display:flex;flex-direction:column;gap:14px}
+.hero-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.eyebrow{font:700 .7rem var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.big{font:700 2.3rem/1.05 var(--f-display);letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:var(--deep)}
+.big.neg{color:var(--out)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini{border-radius:16px;padding:10px 12px;background:rgba(255,255,255,.6);border:1px solid var(--line)}
+.mini .l{font-size:.75rem;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+.mini .v{font:700 1.15rem var(--f-body);font-variant-numeric:tabular-nums;margin-top:2px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot.in{background:var(--in)} .dot.out{background:var(--out)}
+.yearline{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.yearline b{color:var(--fg);font-variant-numeric:tabular-nums}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{padding:14px;border-radius:20px;text-align:left;display:flex;flex-direction:column;gap:4px;border:1px solid var(--line-strong);min-width:0;color:var(--fg)}
+.tile .l{font-size:.75rem;font-weight:700;color:var(--muted)}
+.tile .v{font:700 1.2rem var(--f-body);font-variant-numeric:tabular-nums}
+.tile .h{font-size:.75rem;color:var(--muted)}
+.tile.warn .v{color:var(--warn)} .tile.ok .v{color:var(--ok)}
+
+.ku{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.ku .row1{display:flex;justify-content:space-between;gap:10px;font-size:.82rem;color:var(--muted);flex-wrap:wrap}
+.ku .row1 b{color:var(--fg)}
+.meter{height:8px;border-radius:5px;background:rgba(74,46,38,.1);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--ocean),var(--turq))}
+.meter.hot i{background:linear-gradient(90deg,#d6a14a,var(--danger))}
+
+.notice{padding:14px 16px;display:flex;gap:12px;align-items:center;border-color:rgba(196,140,40,.45)}
+.notice>svg{width:28px;height:28px;color:var(--warn)}
+.notice p{margin:0;font-size:.85rem;color:var(--muted);flex:1;min-width:0}
+.notice b{color:var(--fg)}
+
+/* ---------- controls ---------- */
+.seg{display:inline-grid;grid-auto-flow:column;gap:4px;padding:4px;border-radius:999px;background:rgba(255,255,255,.55);border:1px solid var(--line-strong)}
+.seg button{border:none;background:transparent;border-radius:999px;padding:7px 14px;font-weight:700;font-size:.82rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--deep);box-shadow:0 4px 12px -6px var(--shadow)}
+.periodbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.stepper{display:flex;align-items:center;gap:6px}
+.stepper .lbl{min-width:120px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums;color:var(--deep)}
+.stepper .icon-btn{width:38px;height:38px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;border:1px solid var(--line-strong);background:rgba(255,255,255,.55);border-radius:999px;padding:7px 13px;font-size:.8rem;font-weight:700;color:var(--muted)}
+.chip[aria-pressed="true"]{color:var(--deep);border-color:var(--aqua);background:rgba(255,255,255,.95);box-shadow:0 4px 12px -8px var(--shadow)}
+.chip .n{opacity:.75;margin-left:4px}
+.search{width:100%;min-height:42px;border-radius:14px;border:1px solid var(--line-strong);background:var(--field);padding:0 14px}
+.search::placeholder{color:var(--dim)}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.toolbar .search{flex:1;min-width:160px;width:auto}
+.sumline{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:0 4px;color:var(--muted);font-size:.85rem}
+.sumline b{font:700 1.15rem var(--f-body);color:var(--fg);font-variant-numeric:tabular-nums}
+
+/* ---------- calm lists ---------- */
+.list{border-radius:20px;background:var(--panel);border:1px solid var(--line-strong);overflow:hidden;box-shadow:0 18px 36px -28px var(--shadow);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.row{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;padding:12px 14px;
+  background:transparent;border:none;border-top:1px solid var(--line);text-align:left;color:var(--fg)}
+.row:first-child{border-top:none}
+.row:active{background:rgba(96,99,71,.07)}
+.r-date{font-variant-numeric:tabular-nums;font-weight:700;font-size:.92rem;line-height:1.15;color:var(--deep)}
+.r-date small{display:block;font-weight:500;font-size:.72rem;color:var(--dim)}
+.r-main{min-width:0}
+.r-title{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r-sub{font-size:.8rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.r-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.r-amt{font-weight:800;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.r-amt.in{color:var(--in)} .r-amt.out{color:var(--out)}
+.r-amt small{display:block;font-weight:600;font-size:.72rem;color:var(--dim)}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:999px;
+  background:rgba(74,46,38,.07);color:var(--muted);white-space:nowrap}
+.badge svg{width:12px;height:12px}
+.badge.ok{color:var(--ok);background:var(--in-soft)}
+.badge.warn{color:var(--warn);background:var(--warn-soft)}
+.badge.danger{color:var(--danger);background:var(--out-soft)}
+.badge.aqua{color:var(--ocean);background:var(--aqua-soft)}
+.empty{padding:26px 18px;text-align:center;color:var(--muted);font-size:.9rem}
+.empty b{display:block;color:var(--deep);font:700 1.05rem var(--f-display);margin-bottom:4px}
+.progress{height:6px;border-radius:4px;background:rgba(74,46,38,.1);overflow:hidden;margin-top:7px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--ocean),var(--turq))}
+
+/* ---------- tables (overview) ---------- */
+.tablewrap{overflow-x:auto;border-radius:20px;background:var(--panel);border:1px solid var(--line-strong);box-shadow:0 18px 36px -28px var(--shadow)}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:10px 14px;text-align:left;border-top:1px solid var(--line);white-space:nowrap}
+thead th{border-top:none;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;background:rgba(246,238,224,.78)}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+tfoot td{font-weight:800;background:rgba(246,238,224,.78)}
+.share{color:var(--dim);font-size:.78rem;margin-left:6px}
+.chart{padding:16px 12px 10px}
+.chart svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:14px;font-size:.78rem;color:var(--muted);padding:0 6px 4px}
+.legend span{display:flex;align-items:center;gap:6px}
+
+/* ---------- tab bar ---------- */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:20;
+  padding:0 max(10px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 8px) max(10px,env(safe-area-inset-left,0px))}
+.tabbar nav{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:6px;border-radius:26px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px 6px;border:none;background:transparent;border-radius:18px;color:var(--dim);font-size:.64rem;font-weight:700;min-width:0}
+.tab svg{width:22px;height:22px}
+.tab span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tab[aria-current="page"]{color:var(--deep);background:#fff;box-shadow:0 6px 14px -8px var(--shadow)}
+.tab[aria-current="page"] svg{color:var(--aqua)}
+.fab{position:fixed;z-index:19;right:max(18px,calc(env(safe-area-inset-right,0px) + 18px));bottom:calc(env(safe-area-inset-bottom,0px) + 92px);
+  width:58px;height:58px;border-radius:50%;border:none;display:grid;place-items:center;color:#fff;
+  background:rgba(96,99,71,.84);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border:1px solid rgba(255,255,255,.38);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -3px 8px rgba(40,30,20,.18),inset 0 10px 14px -10px rgba(255,255,255,.35),0 14px 28px -10px rgba(74,46,38,.6)}
+.fab svg{width:26px;height:26px}
+
+/* ---------- sheets ---------- */
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(58,38,32,.28);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;transition:opacity .22s}
+.scrim.show{opacity:1}
+.sheet{position:fixed;z-index:41;left:0;right:0;bottom:0;margin:0 auto;max-width:640px;max-height:94%;display:flex;flex-direction:column;
+  border-radius:28px 28px 0 0;background:linear-gradient(170deg,rgba(253,250,244,.97),rgba(241,232,216,.97));border:1px solid var(--line-strong);border-bottom:none;
+  backdrop-filter:blur(28px) saturate(160%);-webkit-backdrop-filter:blur(28px) saturate(160%);box-shadow:0 -24px 60px -24px rgba(74,46,38,.45),inset 0 1px 0 #fff;
+  transform:translateY(104%);transition:transform .3s cubic-bezier(.2,.9,.25,1)}
+.sheet.show{transform:none}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px))}
+.sheet-head h2{margin:0;font:700 1.3rem var(--f-display);color:var(--deep)}
+.sheet-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px max(18px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 22px) max(18px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+.sheet .icon-btn{width:38px;height:38px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label,.field .lbl{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.inp{width:100%;min-height:46px;padding:10px 14px;border-radius:14px;border:1px solid rgba(74,46,38,.14);background:var(--field);font-size:16px;min-width:0;box-shadow:inset 0 1px 3px rgba(74,46,38,.06)}
+.inp::placeholder{color:var(--dim)}
+select.inp{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat;padding-right:34px}
+textarea.inp{min-height:80px;resize:vertical}
+.money{position:relative}
+.money .inp{font:700 1.6rem var(--f-body);padding-right:44px;font-variant-numeric:tabular-nums;color:var(--deep)}
+.money span{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--muted);font-size:1.2rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid2>*{min-width:0}
+.typeseg{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border-radius:18px;background:rgba(74,46,38,.06);border:1px solid var(--line)}
+.typeseg button{border:none;background:transparent;border-radius:14px;padding:10px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px}
+.typeseg svg{width:18px;height:18px}
+.typeseg button[aria-pressed="true"]{background:#fff;box-shadow:0 4px 12px -6px var(--shadow)}
+.typeseg button[aria-pressed="true"][data-v="in"]{color:var(--in)}
+.typeseg button[aria-pressed="true"][data-v="out"]{color:var(--out)}
+.filebox{border-radius:18px;border:1px dashed rgba(74,46,38,.25);padding:12px;display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,.5)}
+.fitem{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:center}
+.fitem .fi{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--aqua-soft);color:var(--ocean)}
+.fitem .fi svg{width:18px;height:18px}
+.fitem .fn{font-weight:700;font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fitem .fm{font-size:.74rem;color:var(--muted)}
+.fitem select{min-height:34px;font-size:.78rem;padding:4px 28px 4px 10px;border-radius:10px;width:auto}
+.fbtns{display:flex;gap:8px;flex-wrap:wrap}
+.xbtn{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.7);display:grid;place-items:center;color:var(--muted)}
+.xbtn svg{width:14px;height:14px}
+.actions{display:flex;gap:10px;align-items:center;position:sticky;bottom:calc(-22px - env(safe-area-inset-bottom,0px));margin-bottom:calc(-22px - env(safe-area-inset-bottom,0px));
+  padding:14px 0 calc(22px + env(safe-area-inset-bottom,0px));background:linear-gradient(180deg,rgba(241,232,216,0),rgba(241,232,216,.97) 30%)}
+@media (min-width:760px){.actions{bottom:-22px;margin-bottom:-22px;padding-bottom:22px}}
+.actions .btn.primary{flex:1;min-height:52px;font-size:1rem}
+.hist{display:flex;flex-direction:column;gap:8px;font-size:.8rem;color:var(--muted)}
+.hist .h{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.65);border:1px solid var(--line)}
+.hist .h b{color:var(--fg)}
+.hist .ch{display:block;margin-top:3px}
+details.more summary{cursor:pointer;color:var(--muted);font-weight:700;font-size:.85rem;list-style:none}
+details.more summary::-webkit-details-marker{display:none}
+.preview{border-radius:16px;overflow:hidden;background:rgba(255,255,255,.6);border:1px solid var(--line);display:grid;place-items:center;min-height:120px}
+.preview img{max-width:100%;max-height:360px;display:block}
+.preview .ph{padding:24px;color:var(--muted);text-align:center;font-size:.85rem}
+.pick{display:flex;flex-direction:column}
+.pick label{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 4px;border-top:1px solid var(--line)}
+.pick label:first-child{border-top:none}
+.pick input{width:20px;height:20px;accent-color:var(--aqua)}
+.presets{display:flex;gap:8px;flex-wrap:wrap}
+.radios{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.radios label{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.65);font-weight:700}
+.radios input{accent-color:var(--aqua);width:18px;height:18px}
+.info{font-size:.8rem;color:var(--muted);line-height:1.5}
+.ready{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:10px 0}
+.ready .fileico{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;background:var(--aqua-soft);color:var(--ocean)}
+.ready .fileico svg{width:30px;height:30px}
+.ready b{font-size:1rem;word-break:break-all}
+
+.toast{position:fixed;z-index:60;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 100px);transform:translate(-50%,16px);opacity:0;
+  padding:11px 18px;border-radius:999px;background:rgba(58,38,32,.93);color:#fff;font-weight:700;font-size:.86rem;
+  transition:.22s;pointer-events:none;max-width:calc(100% - 32px);text-align:center;box-shadow:0 12px 30px -12px rgba(58,38,32,.5)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.busy{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(58,38,32,.22);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.busy div{padding:18px 22px;border-radius:20px;background:#fff;color:var(--deep);border:1px solid var(--line);font-weight:700;display:flex;align-items:center;gap:12px;box-shadow:0 20px 40px -20px var(--shadow)}
+.spin{width:20px;height:20px;border-radius:50%;border:3px solid rgba(74,46,38,.15);border-top-color:var(--aqua);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (min-width:760px){
+  .big{font-size:2.8rem}
+  .sheet{bottom:auto;top:50%;border-radius:28px;border-bottom:1px solid var(--line-strong);transform:translateY(-46%) scale(.97);opacity:0;transition:transform .25s,opacity .25s}
+  .sheet.show{transform:translateY(-50%);opacity:1}
+  .sheet-body{padding-bottom:22px}
+  .fab{bottom:110px}
+}
+@media (max-width:480px){th,td{padding:9px 8px;font-size:.8rem}thead th{font-size:.62rem}}
+@media (max-width:370px){
+  .add-btn{padding:12px;gap:10px}.add-btn .plus{width:36px;height:36px}.add-btn b{font-size:.88rem}
+  .big{font-size:2rem}.brand .icy{font-size:1.45rem}.brand .studio{font-size:1.3rem}
+  .grid2{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="ocean" aria-hidden="true"><canvas id="sea"></canvas></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-6h4v6"/></symbol>
+  <symbol id="i-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 20h16"/></symbol>
+  <symbol id="i-inv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 12h7M9 16h5"/></symbol>
+  <symbol id="i-files" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 11-8.6 8.6a5 5 0 0 1-7-7L14 4a3.3 3.3 0 0 1 4.7 4.7L10 17.4a1.7 1.7 0 0 1-2.4-2.4l8-8"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9 12 4l9 5"/><path d="M5 10v7M10 10v7M14 10v7M19 10v7M3 20h18"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></symbol>
+  <symbol id="i-zip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18H6z"/><path d="M12 3v2M12 7v2M12 11v2"/><rect x="10" y="14" width="4" height="4" rx="1"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="top">
+    <div class="brand" aria-label="The icyanina Studio">
+      <span class="the">THE</span>
+      <span class="word"><span class="icy">icyanina</span><span class="studio">Studio</span></span>
+    </div>
+    <button class="icon-btn" data-act="settings" aria-label="Sicherung und Einstellungen"><svg><use href="#i-gear"/></svg></button>
+  </header>
+  <main id="view" class="view"></main>
+</div>
+
+<button class="fab" id="fab" data-act="fab" aria-label="Neuer Eintrag" hidden><svg><use href="#i-plus"/></svg></button>
+
+<div class="tabbar">
+  <nav class="glass" aria-label="Bereiche">
+    <button class="tab" data-act="tab" data-tab="start"><svg><use href="#i-home"/></svg><span>Start</span></button>
+    <button class="tab" data-act="tab" data-tab="in"><svg><use href="#i-in"/></svg><span>Einnahmen</span></button>
+    <button class="tab" data-act="tab" data-tab="out"><svg><use href="#i-out"/></svg><span>Ausgaben</span></button>
+    <button class="tab" data-act="tab" data-tab="inv"><svg><use href="#i-inv"/></svg><span>Rechnungen</span></button>
+    <button class="tab" data-act="tab" data-tab="files"><svg><use href="#i-files"/></svg><span>Dateien</span></button>
+    <button class="tab" data-act="tab" data-tab="ov"><svg><use href="#i-chart"/></svg><span>Übersicht</span></button>
+  </nav>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+'use strict';
+/* =========================================================
+   Helpers
+   ========================================================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad2=n=>String(n).padStart(2,'0');
+const MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const MON_S=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const isoOf=d=>d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const todayISO=()=>isoOf(new Date());
+const fmtDate=iso=>iso?iso.slice(8,10)+'.'+iso.slice(5,7)+'.'+iso.slice(0,4):'–';
+const fmtDT=ts=>{const d=new Date(ts);return pad2(d.getDate())+'.'+pad2(d.getMonth()+1)+'.'+d.getFullYear()+', '+pad2(d.getHours())+':'+pad2(d.getMinutes())};
+const EUR=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
+const eur=c=>EUR.format((c||0)/100);
+const plain=c=>((c||0)/100).toFixed(2).replace('.',',');
+const fmtSize=b=>b<1024?b+' B':b<1048576?(b/1024).toFixed(0)+' KB':(b/1048576).toFixed(1).replace('.',',')+' MB';
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const lastDay=(y,m)=>new Date(y,m,0).getDate();
+const addDays=(iso,n)=>{const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+n);return isoOf(d)};
+function parseMoney(s){
+  s=String(s||'').trim().replace(/\s|€/g,'');
+  if(!s)return NaN;
+  if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+  else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
+  const v=Number(s);return isFinite(v)?Math.round(v*100):NaN;
+}
+const icon=(id,cls='')=>`<svg class="${cls}"><use href="#i-${id}"/></svg>`;
+const IS_PREVIEW=!!window.STUDIO_PREVIEW;
+
+/* =========================================================
+   Categories (Kleinunternehmerin §19 UStG: nur Bruttobeträge)
+   ========================================================= */
+const CATS={
+  in:['Dienstleistungen','Produktverkauf','Kurse & Workshops','Sonstige Betriebseinnahmen'],
+  out:['Material & Wareneinkauf','Fremdleistungen','Software & Abos','Werbung & Marketing','Bürobedarf & Porto','Telefon & Internet',
+       'Fahrtkosten','Reisekosten','Fortbildung','Raumkosten & Miete','Versicherungen & Beiträge','Bank- & Kontogebühren',
+       'Arbeitsmittel (GWG bis 800 €)','Sonstige Betriebsausgaben']
+};
+const KIND={rechnung:'Rechnung',beleg:'Beleg',auszug:'Kontoauszug',sonstig:'Sonstiges'};
+const KIND_DIR={rechnung:'Rechnungen',beleg:'Belege',auszug:'Kontoauszuege',sonstig:'Sonstiges'};
+const KU_LIMIT=2500000, KU_MAX=10000000;
+
+/* =========================================================
+   IndexedDB
+   ========================================================= */
+const STORES=['entries','invoices','files','blobs','log','meta'];
+const DB={
+  db:null,
+  open(name){return new Promise((res,rej)=>{
+    const r=indexedDB.open(name,1);
+    r.onupgradeneeded=()=>{const d=r.result;for(const s of STORES)if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:s==='meta'?'k':'id'})};
+    r.onsuccess=()=>{this.db=r.result;res()};r.onerror=()=>rej(r.error)})},
+  req(r){return new Promise((res,rej)=>{r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})},
+  all(s){return this.req(this.db.transaction(s).objectStore(s).getAll())},
+  get(s,k){return this.req(this.db.transaction(s).objectStore(s).get(k))},
+  write(ops){return new Promise((res,rej)=>{ // ops: [[store,'put'|'delete'|'clear',value]]
+    const stores=[...new Set(ops.map(o=>o[0]))];const t=this.db.transaction(stores,'readwrite');
+    t.oncomplete=()=>res();t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('abgebrochen'));
+    for(const [s,op,v] of ops){const st=t.objectStore(s);op==='put'?st.put(v):op==='delete'?st.delete(v):st.clear()}
+  })}
+};
+
+/* =========================================================
+   State
+   ========================================================= */
+const S={entries:[],invoices:[],files:[],log:[],meta:{k:'settings',seq:{},customCats:{in:[],out:[]},lastBackup:null}};
+const now=new Date();
+const ui={
+  tab:'start',
+  per:{in:{mode:'month',y:now.getFullYear(),m:now.getMonth()+1},out:{mode:'month',y:now.getFullYear(),m:now.getMonth()+1}},
+  filter:{in:'all',out:'all',inv:'all',files:'all'},q:{in:'',out:'',files:''},
+  ov:{mode:'year',y:now.getFullYear(),m:now.getMonth()+1}
+};
+const catsFor=t=>[...CATS[t],...(S.meta.customCats?.[t]||[])];
+const fileById=id=>S.files.find(f=>f.id===id);
+const invById=id=>S.invoices.find(i=>i.id===id);
+const entryById=id=>S.entries.find(e=>e.id===id);
+
+async function loadAll(){
+  const [e,i,f,l,m]=await Promise.all(['entries','invoices','files','log','meta'].map(s=>DB.all(s)));
+  S.entries=e;S.invoices=i;S.files=f;S.log=l.sort((a,b)=>a.ts<b.ts?1:-1);
+  const st=m.find(x=>x.k==='settings');if(st)S.meta={...S.meta,...st};
+  S.meta.customCats=S.meta.customCats||{in:[],out:[]};S.meta.seq=S.meta.seq||{};
+}
+
+/* ---------- derived ---------- */
+function paidFor(inv){return S.entries.filter(e=>e.type==='in'&&e.invoiceId===inv.id).reduce((s,e)=>s+e.amount,0)}
+function invStatus(inv){
+  const paid=paidFor(inv);let st=paid>=inv.amount&&inv.amount>0?'bezahlt':paid>0?'teilbezahlt':'offen';
+  return {paid,open:Math.max(0,inv.amount-paid),st,overdue:st!=='bezahlt'&&inv.dueDate&&inv.dueDate<todayISO()};
+}
+const filesOf=o=>(o.fileIds||[]).map(fileById).filter(Boolean);
+function hasBeleg(e){
+  const fs=filesOf(e);
+  if(fs.some(f=>f.kind==='beleg'||f.kind==='rechnung'))return true;
+  if(e.type==='in'&&e.invoiceId){const inv=invById(e.invoiceId);if(inv&&filesOf(inv).length)return true}
+  return false;
+}
+const hasAuszug=e=>filesOf(e).some(f=>f.kind==='auszug');
+function linksOf(fileId){
+  return {entries:S.entries.filter(e=>(e.fileIds||[]).includes(fileId)),invoices:S.invoices.filter(i=>(i.fileIds||[]).includes(fileId))};
+}
+function rangeOf(p){
+  if(p.mode==='all')return ['0000-01-01','9999-12-31'];
+  if(p.mode==='year')return [p.y+'-01-01',p.y+'-12-31'];
+  return [p.y+'-'+pad2(p.m)+'-01',p.y+'-'+pad2(p.m)+'-'+pad2(lastDay(p.y,p.m))];
+}
+const inRange=(iso,[a,b])=>iso>=a&&iso<=b;
+const sumOf=(arr)=>arr.reduce((s,e)=>s+e.amount,0);
+function entriesIn(type,range){return S.entries.filter(e=>e.type===type&&inRange(e.payDate,range))}
+function sortEntries(a){return a.sort((x,y)=>x.payDate===y.payDate?(y.createdAt||0)-(x.createdAt||0):x.payDate<y.payDate?1:-1)}
+
+/* =========================================================
+   Change log
+   ========================================================= */
+const LABELS={type:'Art',payDate:'Zahlungsdatum',amount:'Betrag',party:'Kunde/Anbieter',description:'Beschreibung',category:'Kategorie',
+  docNo:'Rechnungs-/Belegnr.',invoiceId:'Zugehörige Rechnung',fileIds:'Dateien',number:'Rechnungsnummer',customer:'Kunde',
+  issueDate:'Rechnungsdatum',dueDate:'Fällig am',name:'Dateiname',kind:'Dateiart',docDate:'Datum',note:'Notiz'};
+function fmtVal(k,v){
+  if(v==null||v===''||(Array.isArray(v)&&!v.length))return '–';
+  if(k==='amount')return eur(v);
+  if(['payDate','issueDate','dueDate','docDate'].includes(k))return fmtDate(v);
+  if(k==='invoiceId'){const i=invById(v);return i?'Rechnung '+i.number:'(gelöscht)'}
+  if(k==='fileIds')return v.map(id=>fileById(id)?.name||NAME_CACHE.get(id)||'(Datei)').join(', ');
+  if(k==='kind')return KIND[v]||v;
+  if(k==='type')return v==='in'?'Einnahme':'Ausgabe';
+  return String(v);
+}
+function diffOf(a,b){
+  const out=[];
+  for(const k of Object.keys(LABELS)){
+    const va=a?.[k],vb=b?.[k];
+    if(a&&!(k in a)&&!(k in (b||{})))continue;
+    if(JSON.stringify(va??null)!==JSON.stringify(vb??null))out.push({f:LABELS[k],from:a?fmtVal(k,va):'',to:b?fmtVal(k,vb):''});
+  }
+  return out;
+}
+function labelOf(type,o){
+  if(type==='entry')return (o.type==='in'?'Einnahme ':'Ausgabe ')+(o.ref||'')+(o.party?' · '+o.party:'');
+  if(type==='invoice')return 'Rechnung '+o.number+(o.customer?' · '+o.customer:'');
+  if(type==='file')return 'Datei '+o.name;
+  return type;
+}
+function logRec(action,objType,before,after){
+  const o=after||before;
+  return {id:uid('l'),ts:new Date().toISOString(),action,objType,objId:o?.id||'',label:o?labelOf(objType,o):objType,
+    changes:action==='geändert'?diffOf(before,after):action==='angelegt'?diffOf(null,after).filter(c=>c.to!=='–'):action==='gelöscht'?diffOf(before,null).filter(c=>c.from!=='–'):[]};
+}
+async function commit(ops,logs){
+  await DB.write([...ops,...logs.map(l=>['log','put',l])]);
+  for(const [s,op,v] of ops){
+    if(s==='blobs'||s==='log'||s==='meta')continue;
+    const arr=S[s];
+    if(op==='put'){const i=arr.findIndex(x=>x.id===v.id);i>=0?arr[i]=v:arr.push(v)}
+    else if(op==='delete'){const i=arr.findIndex(x=>x.id===v);if(i>=0)arr.splice(i,1)}
+    else arr.length=0;
+  }
+  S.log.unshift(...logs.filter(l=>l.changes.length||l.action!=='geändert').reverse());
+  askPersist();
+}
+async function saveMeta(){await DB.write([['meta','put',S.meta]])}
+let persistAsked=false;
+function askPersist(){if(persistAsked)return;persistAsked=true;try{navigator.storage?.persist?.()}catch(_){}}
+function nextRef(type,date){
+  const y=(date||todayISO()).slice(0,4),key=(type==='in'?'E':'A')+'-'+y;
+  const used=S.entries.filter(e=>e.ref?.startsWith(key+'-')).map(e=>+e.ref.slice(-3)||0);
+  const n=Math.max(S.meta.seq[key]||0,...used,0)+1;S.meta.seq[key]=n;return key+'-'+String(n).padStart(3,'0');
+}
+function nextInvoiceNo(){
+  const y=String(new Date().getFullYear());
+  const nums=S.invoices.map(i=>i.number).filter(Boolean);
+  const last=nums.filter(n=>n.includes(y)).sort().pop();
+  if(last){const m=last.match(/^(.*?)(\d+)$/);if(m)return m[1]+String(+m[2]+1).padStart(m[2].length,'0')}
+  return y+'-001';
+}
+
+/* =========================================================
+   UI basics: toast, busy, sheets, confirm
+   ========================================================= */
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2400)}
+function busy(msg){const d=document.createElement('div');d.className='busy';d.innerHTML=`<div><span class="spin"></span>${esc(msg)}</div>`;document.body.append(d);return()=>d.remove()}
+const sheets=[];
+function openSheet({title,body,onMount,onClose}){
+  const scrim=document.createElement('div');scrim.className='scrim';
+  const el=document.createElement('section');el.className='sheet';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');
+  el.innerHTML=`<div class="sheet-head"><h2>${esc(title)}</h2><button class="icon-btn" data-close aria-label="Schließen">${icon('x')}</button></div><div class="sheet-body">${body}</div>`;
+  document.body.append(scrim,el);
+  const z=40+sheets.length*2;scrim.style.zIndex=z;el.style.zIndex=z+1;
+  const sh={el,scrim,close(){const i=sheets.indexOf(sh);if(i>=0)sheets.splice(i,1);el.classList.remove('show');scrim.classList.remove('show');setTimeout(()=>{el.remove();scrim.remove()},300);onClose&&onClose()}};
+  sheets.push(sh);
+  scrim.onclick=()=>sh.close();el.querySelector('[data-close]').onclick=()=>sh.close();
+  requestAnimationFrame(()=>{scrim.classList.add('show');el.classList.add('show')});
+  onMount&&onMount(el,sh);return sh;
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sheets.length)sheets[sheets.length-1].close()});
+function confirmSheet(title,text,okLabel='Löschen'){
+  return new Promise(res=>{let done=false;
+    openSheet({title,body:`<p class="info" style="font-size:.92rem">${text}</p><div class="actions"><button class="btn" data-no>Abbrechen</button><button class="btn danger armed" data-yes style="flex:1">${esc(okLabel)}</button></div>`,
+      onMount(el,sh){el.querySelector('[data-no]').onclick=()=>sh.close();el.querySelector('[data-yes]').onclick=()=>{done=true;sh.close();res(true)}},
+      onClose(){if(!done)res(false)}});
+  });
+}
+
+/* =========================================================
+   Rendering: shell
+   ========================================================= */
+function setTab(t){ui.tab=t;render();window.scrollTo({top:0})}
+function render(){
+  document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-current',b.dataset.tab===ui.tab?'page':'false'));
+  const fab=$('#fab');fab.hidden=!['in','out','inv','files'].includes(ui.tab);
+  fab.setAttribute('aria-label',{in:'Einnahme hinzufügen',out:'Ausgabe hinzufügen',inv:'Rechnung anlegen',files:'Dateien hochladen'}[ui.tab]||'');
+  const v=$('#view');
+  v.innerHTML=({start:viewStart,in:()=>viewEntries('in'),out:()=>viewEntries('out'),inv:viewInvoices,files:viewFiles,ov:viewOverview}[ui.tab])();
+}
+
+/* ---------- Start ---------- */
+function viewStart(){
+  const t=todayISO(),y=+t.slice(0,4),m=+t.slice(5,7);
+  const mr=rangeOf({mode:'month',y,m}),yr=rangeOf({mode:'year',y});
+  const mi=sumOf(entriesIn('in',mr)),mo=sumOf(entriesIn('out',mr)),yi=sumOf(entriesIn('in',yr)),yo=sumOf(entriesIn('out',yr));
+  const openInv=S.invoices.map(i=>({i,s:invStatus(i)})).filter(x=>x.s.st!=='bezahlt');
+  const openSum=openInv.reduce((s,x)=>s+x.s.open,0),overdue=openInv.filter(x=>x.s.overdue).length;
+  const missIn=S.entries.filter(e=>e.type==='in'&&!hasBeleg(e)).length,missOut=S.entries.filter(e=>e.type==='out'&&!hasBeleg(e)).length;
+  const kuPct=Math.min(100,yi/KU_LIMIT*100);
+  const recent=sortEntries([...S.entries]).slice(0,5);
+  const lb=S.meta.lastBackup,needBackup=S.entries.length+S.files.length>0&&(!lb||(Date.now()-new Date(lb))/864e5>14);
+  return `
+  <section class="glass sheen hero">
+    <div class="hero-top"><span class="eyebrow">${MONTHS[m-1]} ${y} · Differenz</span><button class="linklike" data-act="goov" data-mode="month">Details</button></div>
+    <div class="big num ${mi-mo<0?'neg':''}">${eur(mi-mo)}</div>
+    <div class="pair">
+      <div class="mini"><div class="l"><span class="dot in"></span>Einnahmen</div><div class="v num">${eur(mi)}</div></div>
+      <div class="mini"><div class="l"><span class="dot out"></span>Ausgaben</div><div class="v num">${eur(mo)}</div></div>
+    </div>
+    <div class="yearline"><span>Jahr ${y}:</span><span>Einnahmen <b>${eur(yi)}</b></span><span>Ausgaben <b>${eur(yo)}</b></span><span>Differenz <b>${eur(yi-yo)}</b></span></div>
+  </section>
+  <div class="add-row">
+    <button class="add-btn in glass" data-act="new-entry" data-type="in"><span class="plus">${icon('plus')}</span><span><b>Einnahme hinzufügen</b><span class="s">Zahlung erhalten</span></span></button>
+    <button class="add-btn out glass" data-act="new-entry" data-type="out"><span class="plus">${icon('plus')}</span><span><b>Ausgabe hinzufügen</b><span class="s">Beleg &amp; Betrag</span></span></button>
+  </div>
+  ${needBackup?`<div class="glass notice">${icon('shield','')}<p><b>${lb?'Letzte Sicherung am '+fmtDate(lb.slice(0,10)):'Noch keine Sicherung'}</b><br>Deine Daten liegen nur auf diesem Gerät. Speicher regelmäßig eine Sicherung in „Dateien“ oder iCloud.</p><button class="btn small" data-act="backup">Sichern</button></div>`:''}
+  <div class="tiles">
+    <button class="tile glass ${openInv.length?'warn':'ok'}" data-act="goinv"><span class="l">Offene Rechnungen</span><span class="v">${eur(openSum)}</span><span class="h">${openInv.length} offen${overdue?` · ${overdue} überfällig`:''}</span></button>
+    <button class="tile glass ${missOut?'warn':'ok'}" data-act="gomiss" data-type="out"><span class="l">Ausgaben ohne Beleg</span><span class="v">${missOut}</span><span class="h">${missOut?'Belege nachreichen':'Alles belegt'}</span></button>
+    <button class="tile glass ${missIn?'warn':'ok'}" data-act="gomiss" data-type="in"><span class="l">Einnahmen ohne Rechnung</span><span class="v">${missIn}</span><span class="h">${missIn?'Rechnung zuordnen':'Alles belegt'}</span></button>
+  </div>
+  <section class="glass ku">
+    <div class="row1"><span>Umsatz ${y} (Kleinunternehmergrenze)</span><span><b>${eur(yi)}</b> von ${eur(KU_LIMIT)}</span></div>
+    <div class="meter ${yi>KU_LIMIT*0.85?'hot':''}"><i style="width:${kuPct}%"></i></div>
+    <div class="info">${yi>KU_MAX?'Achtung: Über 100.000 € entfällt die Kleinunternehmerregelung sofort. Bitte mit Steuerberatung klären.':yi>KU_LIMIT?'Über 25.000 € in diesem Jahr: Ab nächstem Jahr giltst du nicht mehr als Kleinunternehmerin.':'Bleibst du dieses Jahr unter 25.000 €, kannst du nächstes Jahr Kleinunternehmerin bleiben. Orientierung anhand deiner erfassten Einnahmen.'}</div>
+  </section>
+  <h2 class="sec">Letzte Buchungen</h2>
+  ${recent.length?`<div class="list">${recent.map(entryRow).join('')}</div>`:`<div class="list empty"><b>Noch keine Buchungen</b>Leg oben deine erste Einnahme oder Ausgabe an.</div>`}`;
+}
+
+/* ---------- entry row ---------- */
+function entryRow(e){
+  const inv=e.invoiceId&&invById(e.invoiceId);
+  const beleg=hasBeleg(e);
+  const badges=[
+    beleg?`<span class="badge ok">${icon('clip')}${e.type==='in'?'Rechnung':'Beleg'}</span>`:`<span class="badge warn">${icon('alert')}${e.type==='in'?'Rechnung fehlt':'Beleg fehlt'}</span>`,
+    hasAuszug(e)?`<span class="badge aqua">${icon('bank')}Auszug</span>`:'',
+    inv?`<span class="badge">${icon('inv')}${esc(inv.number)}</span>`:(e.docNo?`<span class="badge">Nr. ${esc(e.docNo)}</span>`:'')
+  ].join('');
+  return `<button class="row" data-act="edit-entry" data-id="${e.id}">
+    <span class="r-date">${e.payDate.slice(8,10)}.${e.payDate.slice(5,7)}.<small>${e.payDate.slice(0,4)}</small></span>
+    <span class="r-main"><span class="r-title" style="display:block">${esc(e.party||(e.type==='in'?'Einnahme':'Ausgabe'))}</span>
+      <span class="r-sub" style="display:block">${esc([e.description,e.category].filter(Boolean).join(' · '))}</span>
+      <span class="r-badges">${badges}</span></span>
+    <span class="r-amt ${e.type}">${e.type==='in'?'+':'−'} ${eur(e.amount)}<small>${esc(e.ref||'')}</small></span></button>`;
+}
+
+/* ---------- Einnahmen / Ausgaben ---------- */
+function periodLabel(p){return p.mode==='all'?'Alle Jahre':p.mode==='year'?String(p.y):MONTHS[p.m-1]+' '+p.y}
+function periodBar(key,p){
+  return `<div class="periodbar">
+    <div class="seg" role="group" aria-label="Zeitraum">${[['month','Monat'],['year','Jahr'],['all','Alle']].map(([v,l])=>`<button data-act="permode" data-key="${key}" data-v="${v}" aria-pressed="${p.mode===v}">${l}</button>`).join('')}</div>
+    ${p.mode==='all'?'':`<div class="stepper"><button class="icon-btn" data-act="perstep" data-key="${key}" data-d="-1" aria-label="Zurück">${icon('left')}</button><span class="lbl">${periodLabel(p)}</span><button class="icon-btn" data-act="perstep" data-key="${key}" data-d="1" aria-label="Weiter">${icon('right')}</button></div>`}
+  </div>`;
+}
+function entriesResults(type){
+  const p=ui.per[type],f=ui.filter[type],q=ui.q[type].trim().toLowerCase(),isIn=type==='in';
+  let list=entriesIn(type,rangeOf(p));
+  if(f==='miss')list=list.filter(e=>!hasBeleg(e));
+  if(f==='noauszug')list=list.filter(e=>!hasAuszug(e));
+  if(q)list=list.filter(e=>[e.party,e.description,e.category,e.docNo,e.ref,invById(e.invoiceId)?.number,plain(e.amount)].join(' ').toLowerCase().includes(q));
+  sortEntries(list);
+  return `<div class="sumline"><span>${list.length} ${list.length===1?'Eintrag':'Einträge'} · ${periodLabel(p)}</span><b>${eur(sumOf(list))}</b></div>
+  ${list.length?`<div class="list">${list.map(entryRow).join('')}</div>`:`<div class="list empty"><b>${f!=='all'||q?'Nichts gefunden':'Noch keine '+(isIn?'Einnahmen':'Ausgaben')}</b>${f!=='all'||q?'Ändere Filter oder Suche.':'Tipp auf das Plus, um den ersten Eintrag anzulegen.'}</div>`}`;
+}
+function viewEntries(type){
+  const p=ui.per[type],range=rangeOf(p),f=ui.filter[type];
+  const list=entriesIn(type,range);
+  const miss=list.filter(e=>!hasBeleg(e)).length,noAusz=list.filter(e=>!hasAuszug(e)).length;
+  const isIn=type==='in';
+  return `
+  <div class="view-head"><div><h1>${isIn?'Einnahmen':'Ausgaben'}</h1><div class="sub">Gezählt nach Zahlungsdatum</div></div>
+    <div class="toolbar"><button class="btn" data-act="export" data-kind="${type}">${icon('down')}Exportieren</button><button class="btn primary" data-act="new-entry" data-type="${type}">${icon('plus')}${isIn?'Einnahme':'Ausgabe'}</button></div></div>
+  ${periodBar(type,p)}
+  <div class="chips" role="group" aria-label="Filter">
+    <button class="chip" data-act="filter" data-key="${type}" data-v="all" aria-pressed="${f==='all'}">Alle</button>
+    <button class="chip" data-act="filter" data-key="${type}" data-v="miss" aria-pressed="${f==='miss'}">${isIn?'Rechnung fehlt':'Beleg fehlt'}<span class="n">${miss}</span></button>
+    <button class="chip" data-act="filter" data-key="${type}" data-v="noauszug" aria-pressed="${f==='noauszug'}">Ohne Kontoauszug<span class="n">${noAusz}</span></button>
+  </div>
+  <input class="search" type="search" placeholder="Suchen: ${isIn?'Kunde':'Anbieter'}, Beschreibung, Nummer …" data-input="q" data-key="${type}" value="${esc(ui.q[type])}" aria-label="Suchen">
+  <div id="results" class="view">${entriesResults(type)}</div>`;
+}
+
+/* ---------- Rechnungen ---------- */
+const ST_LABEL={offen:'Offen',teilbezahlt:'Teilbezahlt',bezahlt:'Bezahlt'};
+function stBadge(s){
+  if(s.overdue)return `<span class="badge danger">${icon('alert')}Überfällig</span>`;
+  return `<span class="badge ${s.st==='bezahlt'?'ok':s.st==='teilbezahlt'?'aqua':'warn'}">${ST_LABEL[s.st]}</span>`;
+}
+function viewInvoices(){
+  const all=S.invoices.map(i=>({i,s:invStatus(i)})).sort((a,b)=>a.i.issueDate<b.i.issueDate?1:-1);
+  const f=ui.filter.inv;
+  const cnt=k=>all.filter(x=>k==='over'?x.s.overdue:x.s.st===k).length;
+  let list=all;
+  if(f==='over')list=all.filter(x=>x.s.overdue);else if(f!=='all')list=all.filter(x=>x.s.st===f);
+  const openSum=all.filter(x=>x.s.st!=='bezahlt').reduce((s,x)=>s+x.s.open,0);
+  return `
+  <div class="view-head"><div><h1>Rechnungen</h1><div class="sub">Ausgangsrechnungen und ihre Zahlungen</div></div>
+    <div class="toolbar"><button class="btn" data-act="export" data-kind="invoices">${icon('zip')}Alle als ZIP</button><button class="btn primary" data-act="new-invoice">${icon('plus')}Rechnung</button></div></div>
+  <div class="pair">
+    <div class="mini glass"><div class="l">Noch offen</div><div class="v num" style="color:var(--warn)">${eur(openSum)}</div></div>
+    <div class="mini glass"><div class="l">Rechnungen gesamt</div><div class="v num">${all.length}</div></div>
+  </div>
+  <div class="chips" role="group" aria-label="Status">
+    ${[['all','Alle',all.length],['offen','Offen',cnt('offen')],['teilbezahlt','Teilbezahlt',cnt('teilbezahlt')],['bezahlt','Bezahlt',cnt('bezahlt')],['over','Überfällig',cnt('over')]]
+      .map(([v,l,n])=>`<button class="chip" data-act="filter" data-key="inv" data-v="${v}" aria-pressed="${f===v}">${l}<span class="n">${n}</span></button>`).join('')}
+  </div>
+  ${list.length?`<div class="list">${list.map(({i,s})=>`
+    <button class="row" data-act="edit-invoice" data-id="${i.id}">
+      <span class="r-date">${i.issueDate.slice(8,10)}.${i.issueDate.slice(5,7)}.<small>${i.issueDate.slice(0,4)}</small></span>
+      <span class="r-main"><span class="r-title" style="display:block">${esc(i.number)} · ${esc(i.customer||'Kunde')}</span>
+        <span class="r-sub" style="display:block">${s.st==='bezahlt'?'Vollständig bezahlt':'Bezahlt '+eur(s.paid)+' · offen '+eur(s.open)}${i.dueDate&&s.st!=='bezahlt'?' · fällig '+fmtDate(i.dueDate):''}</span>
+        <span class="progress"><i style="width:${i.amount?Math.min(100,s.paid/i.amount*100):0}%"></i></span>
+        <span class="r-badges">${stBadge(s)}${filesOf(i).length?`<span class="badge ok">${icon('clip')}Datei</span>`:`<span class="badge warn">${icon('alert')}Datei fehlt</span>`}</span></span>
+      <span class="r-amt">${eur(i.amount)}</span></button>`).join('')}</div>`
+  :`<div class="list empty"><b>${f==='all'?'Noch keine Rechnungen':'Keine Rechnungen mit diesem Status'}</b>${f==='all'?'Leg eine Rechnung an und lade die PDF dazu hoch. Zahlungen ordnest du dann einfach zu.':''}</div>`}`;
+}
+
+/* ---------- Dateien ---------- */
+function fileIcon(f){return f.type?.startsWith('image/')?'img':f.kind==='auszug'?'bank':'doc'}
+function filesResults(){
+  const f=ui.filter.files,q=ui.q.files.trim().toLowerCase();
+  let list=S.files.map(x=>({x,l:linksOf(x.id)}));
+  if(f==='unlinked')list=list.filter(o=>!o.l.entries.length&&!o.l.invoices.length);else if(f!=='all')list=list.filter(o=>o.x.kind===f);
+  if(q)list=list.filter(o=>(o.x.name+' '+(o.x.note||'')).toLowerCase().includes(q));
+  list.sort((a,b)=>a.x.docDate===b.x.docDate?(b.x.addedAt||'').localeCompare(a.x.addedAt||''):a.x.docDate<b.x.docDate?1:-1);
+  return list.length?`<div class="list">${list.map(({x,l})=>{const n=l.entries.length+l.invoices.length;return `
+    <button class="row" data-act="edit-file" data-id="${x.id}" style="grid-template-columns:44px minmax(0,1fr) auto">
+      <span class="fitem" style="display:block"><span class="fi">${icon(fileIcon(x))}</span></span>
+      <span class="r-main"><span class="r-title" style="display:block">${esc(x.name)}</span>
+        <span class="r-sub" style="display:block">${fmtDate(x.docDate)} · ${fmtSize(x.size||0)}</span>
+        <span class="r-badges"><span class="badge">${KIND[x.kind]}</span>${n?`<span class="badge ok">${icon('link')}${n} ${n===1?'Zuordnung':'Zuordnungen'}</span>`:`<span class="badge warn">${icon('alert')}Nicht zugeordnet</span>`}</span></span>
+      <span class="r-amt" style="color:var(--dim)">${icon('right','')}</span></button>`}).join('')}</div>`
+  :`<div class="list empty"><b>${S.files.length?'Keine Dateien gefunden':'Noch keine Dateien'}</b>${S.files.length?'':'Lade Rechnungen, Belege und Kontoauszüge hoch, z. B. aus „Dateien“, Fotos oder direkt mit der Kamera.'}</div>`;
+}
+function viewFiles(){
+  const f=ui.filter.files;
+  const unl=S.files.filter(x=>{const l=linksOf(x.id);return !l.entries.length&&!l.invoices.length});
+  const total=S.files.reduce((s,x)=>s+(x.size||0),0);
+  const missOut=S.entries.filter(e=>e.type==='out'&&!hasBeleg(e)).length;
+  return `
+  <div class="view-head"><div><h1>Dateien</h1><div class="sub">${S.files.length} Originaldateien · ${fmtSize(total)}</div></div>
+    <div class="toolbar"><button class="btn" data-act="export" data-kind="docs">${icon('zip')}Belege &amp; Auszüge als ZIP</button><button class="btn primary" data-act="upload">${icon('plus')}Hochladen</button></div></div>
+  ${missOut?`<button class="glass notice" data-act="gomiss" data-type="out" style="text-align:left;color:inherit">${icon('alert')}<p><b>${missOut} ${missOut===1?'Ausgabe hat':'Ausgaben haben'} noch keinen Beleg.</b> Tippen, um sie anzuzeigen.</p></button>`:''}
+  <div class="chips" role="group" aria-label="Dateiart">
+    ${[['all','Alle',S.files.length],['rechnung','Rechnungen'],['beleg','Belege'],['auszug','Kontoauszüge'],['sonstig','Sonstiges'],['unlinked','Nicht zugeordnet',unl.length]]
+      .map(([v,l,n])=>`<button class="chip" data-act="filter" data-key="files" data-v="${v}" aria-pressed="${f===v}">${l}<span class="n">${n??S.files.filter(x=>x.kind===v).length}</span></button>`).join('')}
+  </div>
+  <input class="search" type="search" placeholder="Dateien suchen …" data-input="q" data-key="files" value="${esc(ui.q.files)}" aria-label="Dateien suchen">
+  <div id="results" class="view">${filesResults()}</div>`;
+}
+
+/* ---------- Übersicht ---------- */
+function viewOverview(){
+  const o=ui.ov,p=o.mode==='year'?{mode:'year',y:o.y}:{mode:'month',y:o.y,m:o.m};
+  const range=rangeOf(p),ins=entriesIn('in',range),outs=entriesIn('out',range);
+  const si=sumOf(ins),so=sumOf(outs);
+  const byCat=(arr,type)=>{const m=new Map();for(const e of arr)m.set(e.category||'Ohne Kategorie',(m.get(e.category||'Ohne Kategorie')||0)+e.amount);
+    return [...m.entries()].sort((a,b)=>b[1]-a[1]).map(([c,v])=>({c,v}))};
+  const catTable=(title,rows,total,type)=>`<div class="tablewrap"><table><thead><tr><th>${title}</th><th class="r">Summe</th></tr></thead><tbody>
+    ${rows.length?rows.map(r=>`<tr><td><span class="dot ${type}" style="display:inline-block;margin-right:8px"></span>${esc(r.c)}<span class="share">${total?Math.round(r.v/total*100):0} %</span></td><td class="r">${eur(r.v)}</td></tr>`).join(''):`<tr><td colspan="2" style="color:var(--muted)">Keine Einträge</td></tr>`}
+    </tbody><tfoot><tr><td>Gesamt</td><td class="r">${eur(total)}</td></tr></tfoot></table></div>`;
+  let monthly='';
+  if(o.mode==='year'){
+    const rows=[];for(let m=1;m<=12;m++){const r=rangeOf({mode:'month',y:o.y,m});rows.push({m,i:sumOf(entriesIn('in',r)),o:sumOf(entriesIn('out',r))})}
+    const max=Math.max(1,...rows.map(r=>Math.max(r.i,r.o)));
+    const W=640,H=240,pl=8,pb=34,bw=(W-pl*2)/12;
+    const bars=rows.map((r,k)=>{const x=pl+k*bw,hi=(H-pb-12)*r.i/max,ho=(H-pb-12)*r.o/max;
+      return `<rect x="${x+bw*.18}" y="${H-pb-hi}" width="${bw*.3}" height="${Math.max(hi,r.i?2:0)}" rx="3" fill="#4f7a3a"/><rect x="${x+bw*.52}" y="${H-pb-ho}" width="${bw*.3}" height="${Math.max(ho,r.o?2:0)}" rx="3" fill="#b0563f"/>
+        <text x="${x+bw/2}" y="${H-9}" text-anchor="middle" font-size="19" fill="#7a6656" font-family="Plus Jakarta Sans, sans-serif">${MON_S[k]}</text>`}).join('');
+    const grid=[.25,.5,.75,1].map(t=>`<line x1="${pl}" x2="${W-pl}" y1="${H-pb-(H-pb-12)*t}" y2="${H-pb-(H-pb-12)*t}" stroke="rgba(74,46,38,.10)"/>`).join('');
+    monthly=`<div class="list chart"><div class="legend"><span><span class="dot in"></span>Einnahmen</span><span><span class="dot out"></span>Ausgaben</span><span style="margin-left:auto">max. ${eur(max)}</span></div>
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Einnahmen und Ausgaben pro Monat ${o.y}">${grid}${bars}</svg></div>
+      <div class="tablewrap"><table><thead><tr><th>Monat</th><th class="r">Einnahmen</th><th class="r">Ausgaben</th><th class="r">Differenz</th></tr></thead><tbody>
+      ${rows.map(r=>`<tr><td><button class="linklike" data-act="ovmonth" data-m="${r.m}" style="padding:0">${MONTHS[r.m-1]}</button></td><td class="r">${eur(r.i)}</td><td class="r">${eur(r.o)}</td><td class="r" style="color:${r.i-r.o<0?'var(--out)':'var(--fg)'}">${eur(r.i-r.o)}</td></tr>`).join('')}
+      </tbody><tfoot><tr><td>${o.y}</td><td class="r">${eur(si)}</td><td class="r">${eur(so)}</td><td class="r">${eur(si-so)}</td></tr></tfoot></table></div>`;
+  }
+  const openInv=S.invoices.map(i=>({i,s:invStatus(i)})).filter(x=>x.s.st!=='bezahlt'&&x.i.issueDate<=range[1]);
+  const lbl=o.mode==='year'?String(o.y):MONTHS[o.m-1]+' '+o.y;
+  return `
+  <div class="view-head"><div><h1>Übersicht</h1><div class="sub">Nach tatsächlichem Zahlungsdatum (Zufluss/Abfluss)</div></div>
+    <button class="btn primary" data-act="export" data-kind="year">${icon('zip')}Jahrespaket ${o.y}</button></div>
+  <div class="periodbar">
+    <div class="seg" role="group" aria-label="Ansicht">${[['year','Jahr'],['month','Monat']].map(([v,l])=>`<button data-act="ovmode" data-v="${v}" aria-pressed="${o.mode===v}">${l}</button>`).join('')}</div>
+    <div class="stepper"><button class="icon-btn" data-act="ovstep" data-d="-1" aria-label="Zurück">${icon('left')}</button><span class="lbl">${lbl}</span><button class="icon-btn" data-act="ovstep" data-d="1" aria-label="Weiter">${icon('right')}</button></div>
+  </div>
+  <section class="glass sheen hero">
+    <span class="eyebrow">${lbl} · Überschuss</span>
+    <div class="big num ${si-so<0?'neg':''}">${eur(si-so)}</div>
+    <div class="pair">
+      <div class="mini"><div class="l"><span class="dot in"></span>Einnahmen</div><div class="v num">${eur(si)}</div></div>
+      <div class="mini"><div class="l"><span class="dot out"></span>Ausgaben</div><div class="v num">${eur(so)}</div></div>
+    </div>
+  </section>
+  ${monthly}
+  <h2 class="sec">Summen pro Kategorie</h2>
+  ${catTable('Einnahmen',byCat(ins),si,'in')}
+  ${catTable('Ausgaben',byCat(outs),so,'out')}
+  ${openInv.length?`<div class="glass notice">${icon('inv')}<p><b>${openInv.length} offene ${openInv.length===1?'Rechnung':'Rechnungen'} über ${eur(openInv.reduce((s,x)=>s+x.s.open,0))}</b><br>Zählen erst als Einnahme, wenn das Geld da ist.</p><button class="btn small" data-act="goinv">Ansehen</button></div>`:''}
+  <p class="info">Als Kleinunternehmerin (§ 19 UStG) erfasst du Bruttobeträge ohne Umsatzsteuer. Die Übersicht ist eine Grundlage für deine Anlage EÜR, aber keine Steuerberatung.</p>`;
+}
+
+/* =========================================================
+   Entry form
+   ========================================================= */
+function fileBlock(state,defKind){
+  const items=[
+    ...state.fileIds.map(id=>{const f=fileById(id);if(!f)return '';return `<div class="fitem"><span class="fi">${icon(fileIcon(f))}</span><span style="min-width:0"><div class="fn">${esc(f.name)}</div><div class="fm">${KIND[f.kind]} · ${fmtSize(f.size||0)} · <button type="button" class="linklike" data-open-file="${f.id}" style="padding:0;font-size:.74rem">ansehen</button></div></span><button type="button" class="xbtn" data-unlink="${f.id}" aria-label="Verknüpfung lösen">${icon('x')}</button></div>`}),
+    ...state.pending.map(p=>`<div class="fitem"><span class="fi">${icon(p.file.type.startsWith('image/')?'img':'doc')}</span><span style="min-width:0"><div class="fn">${esc(p.file.name)}</div><div class="fm">neu · ${fmtSize(p.file.size)}</div></span>
+      <span style="display:flex;gap:6px;align-items:center"><select class="inp" data-pkind="${p.tmp}" aria-label="Dateiart">${Object.entries(KIND).map(([k,l])=>`<option value="${k}" ${p.kind===k?'selected':''}>${l}</option>`).join('')}</select><button type="button" class="xbtn" data-unpend="${p.tmp}" aria-label="Entfernen">${icon('x')}</button></span></div>`)
+  ].join('');
+  return `<div class="filebox">${items||`<div class="info">Noch keine Datei. Lade den ${defKind==='rechnung'?'Rechnungs-PDF':'Beleg'} hoch oder verknüpfe eine vorhandene Datei${defKind==='beleg'?' (z. B. Kontoauszug)':''}.</div>`}
+    <div class="fbtns"><label class="btn small">${icon('plus')}Datei hochladen<input type="file" multiple hidden data-addfiles accept="image/*,application/pdf,.pdf,.png,.jpg,.jpeg,.heic,.doc,.docx,.xls,.xlsx,.csv,.txt"></label>
+    <button type="button" class="btn small" data-linkexisting>${icon('link')}Vorhandene verknüpfen</button></div></div>`;
+}
+function wireFileBlock(el,state,defKind,rerender){
+  el.querySelector('[data-addfiles]').onchange=e=>{for(const file of e.target.files)state.pending.push({tmp:uid('t'),file,kind:defKind});e.target.value='';rerender()};
+  el.querySelector('[data-linkexisting]').onclick=()=>pickFiles(state.fileIds,ids=>{state.fileIds=ids;rerender()});
+  el.querySelectorAll('[data-unlink]').forEach(b=>b.onclick=()=>{state.fileIds=state.fileIds.filter(x=>x!==b.dataset.unlink);rerender()});
+  el.querySelectorAll('[data-unpend]').forEach(b=>b.onclick=()=>{state.pending=state.pending.filter(x=>x.tmp!==b.dataset.unpend);rerender()});
+  el.querySelectorAll('[data-pkind]').forEach(s=>s.onchange=()=>{const p=state.pending.find(x=>x.tmp===s.dataset.pkind);if(p)p.kind=s.value});
+  el.querySelectorAll('[data-open-file]').forEach(b=>b.onclick=()=>openFile(b.dataset.openFile));
+}
+const NAME_CACHE=new Map();
+async function pendingToFiles(pending,docDate){
+  const ops=[],logs=[],ids=[];
+  for(const p of pending){
+    const buf=await p.file.arrayBuffer();
+    const meta={id:uid('f'),name:p.file.name||'Datei',type:p.file.type||'application/octet-stream',size:p.file.size,kind:p.kind,docDate:docDate||todayISO(),addedAt:new Date().toISOString(),note:''};
+    NAME_CACHE.set(meta.id,meta.name);ops.push(['blobs','put',{id:meta.id,data:buf}],['files','put',meta]);logs.push(logRec('hochgeladen','file',null,meta));ids.push(meta.id);
+  }
+  return {ops,logs,ids};
+}
+function historyHtml(id){
+  const h=S.log.filter(l=>l.objId===id);
+  if(!h.length)return '';
+  return `<details class="more"><summary>Verlauf (${h.length})</summary><div class="hist" style="margin-top:10px">${h.map(l=>`<div class="h"><b>${esc(l.action[0].toUpperCase()+l.action.slice(1))}</b> · ${fmtDT(l.ts)}${l.changes.map(c=>`<span class="ch">${esc(c.f)}: ${l.action==='geändert'?esc(c.from)+' → ':''}${esc(l.action==='gelöscht'?c.from:c.to)}</span>`).join('')}</div>`).join('')}</div></details>`;
+}
+function partyOptions(type){
+  const set=new Set();for(const e of S.entries)if(e.type===type&&e.party)set.add(e.party);
+  if(type==='in')for(const i of S.invoices)if(i.customer)set.add(i.customer);
+  return [...set].sort((a,b)=>a.localeCompare(b,'de')).map(p=>`<option value="${esc(p)}">`).join('');
+}
+function openEntryForm(existing,preset={}){
+  const isNew=!existing;
+  const st={type:existing?.type||preset.type||'out',fileIds:[...(existing?.fileIds||preset.fileIds||[])],pending:[]};
+  const v=existing||{payDate:todayISO(),amount:'',party:'',description:'',category:'',docNo:'',invoiceId:'',...preset};
+  openSheet({title:isNew?(st.type==='in'?'Einnahme hinzufügen':'Ausgabe hinzufügen'):(st.type==='in'?'Einnahme':'Ausgabe')+' '+(existing.ref||''),
+    body:`<form id="ef" novalidate style="display:flex;flex-direction:column;gap:14px">
+      <div class="typeseg" role="group" aria-label="Art"><button type="button" data-v="in">${icon('in')}Einnahme</button><button type="button" data-v="out">${icon('out')}Ausgabe</button></div>
+      <div class="grid2">
+        <div class="field"><label for="f-amount">Betrag (brutto)</label><div class="money"><input class="inp" id="f-amount" inputmode="decimal" placeholder="0,00" value="${v.amount!==''&&v.amount!=null?plain(v.amount):''}"><span>€</span></div></div>
+        <div class="field"><label for="f-date">Zahlungsdatum</label><input class="inp" type="date" id="f-date" value="${esc(v.payDate)}"></div>
+      </div>
+      <div class="field"><label for="f-party" id="l-party">Kunde</label><input class="inp" id="f-party" list="dl-party" maxlength="120" value="${esc(v.party)}" autocomplete="off"><datalist id="dl-party"></datalist></div>
+      <div class="field"><label for="f-desc">Beschreibung</label><input class="inp" id="f-desc" maxlength="200" value="${esc(v.description)}" placeholder="z. B. Logo-Design, Adobe Abo November"></div>
+      <div class="grid2">
+        <div class="field"><label for="f-cat">Kategorie</label><select class="inp" id="f-cat"></select></div>
+        <div class="field"><label for="f-doc" id="l-doc">Rechnungsnr.</label><input class="inp" id="f-doc" maxlength="60" value="${esc(v.docNo)}"></div>
+      </div>
+      <div class="field" id="w-inv"><label for="f-inv">Zugehörige Rechnung</label><select class="inp" id="f-inv"></select><div class="info" id="inv-hint"></div></div>
+      <div class="field"><span class="lbl" id="l-files">Belege &amp; Dateien</span><div id="fb"></div></div>
+      ${isNew?'':historyHtml(existing.id)}
+      <div class="actions">${isNew?'':'<button type="button" class="btn danger" id="del">Löschen</button>'}<button type="submit" class="btn primary">${isNew?'Speichern':'Änderungen speichern'}</button></div>
+    </form>`,
+    onMount(el,sh){
+      const q=s=>el.querySelector(s);
+      const fillType=()=>{
+        el.querySelectorAll('.typeseg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===st.type));
+        q('#l-party').textContent=st.type==='in'?'Kunde':'Anbieter';
+        q('#f-party').placeholder=st.type==='in'?'Name des Kunden':'z. B. Adobe, dm, Telekom';
+        q('#l-doc').textContent=st.type==='in'?'Rechnungsnr.':'Belegnr.';
+        q('#dl-party').innerHTML=partyOptions(st.type);
+        const cur=q('#f-cat').value||v.category;
+        const cats=catsFor(st.type);
+        q('#f-cat').innerHTML=`<option value="">Kategorie wählen</option>`+cats.map(c=>`<option ${c===cur?'selected':''}>${esc(c)}</option>`).join('')+(cur&&!cats.includes(cur)?`<option selected>${esc(cur)}</option>`:'');
+        q('#w-inv').hidden=st.type!=='in';
+        const invs=S.invoices.filter(i=>i.id===v.invoiceId||invStatus(i).st!=='bezahlt').sort((a,b)=>a.issueDate<b.issueDate?1:-1);
+        q('#f-inv').innerHTML=`<option value="">Keine Rechnung</option>`+invs.map(i=>{const s=invStatus(i);return `<option value="${i.id}" ${i.id===(q('#f-inv').value||v.invoiceId)?'selected':''}>${esc(i.number)} · ${esc(i.customer||'')} · offen ${eur(s.open)}</option>`}).join('');
+        drawFiles();
+      };
+      const drawFiles=()=>{q('#fb').innerHTML=fileBlock(st,st.type==='in'?'rechnung':'beleg');wireFileBlock(q('#fb'),st,st.type==='in'?'rechnung':'beleg',drawFiles)};
+      el.querySelectorAll('.typeseg button').forEach(b=>b.onclick=()=>{st.type=b.dataset.v;q('#f-cat').value='';fillType()});
+      q('#f-inv').onchange=()=>{
+        const inv=invById(q('#f-inv').value);if(!inv){q('#inv-hint').textContent='';return}
+        const s=invStatus(inv);q('#inv-hint').textContent=`Rechnung über ${eur(inv.amount)}, bereits bezahlt ${eur(s.paid)}.`;
+        if(!q('#f-party').value)q('#f-party').value=inv.customer||'';
+        if(!q('#f-doc').value)q('#f-doc').value=inv.number;
+        if(!q('#f-amount').value&&s.open)q('#f-amount').value=plain(s.open);
+        if(!q('#f-cat').value&&inv.category)q('#f-cat').value=inv.category;
+        if(!q('#f-desc').value)q('#f-desc').value=inv.description||('Zahlung Rechnung '+inv.number);
+      };
+      fillType();if(v.invoiceId)q('#f-inv').dispatchEvent(new Event('change'));
+      if(isNew)setTimeout(()=>q('#f-amount').focus(),350);
+      q('#ef').onsubmit=async ev=>{
+        ev.preventDefault();
+        const amount=parseMoney(q('#f-amount').value),payDate=q('#f-date').value;
+        if(!(amount>0)){toast('Bitte einen Betrag eintragen');q('#f-amount').focus();return}
+        if(!payDate){toast('Bitte das Zahlungsdatum eintragen');return}
+        const done=busy('Speichere …');
+        try{
+          const up=await pendingToFiles(st.pending,payDate);
+          const rec={...(existing||{id:uid('e'),createdAt:Date.now(),ref:nextRef(st.type,payDate)}),
+            type:st.type,amount,payDate,party:q('#f-party').value.trim(),description:q('#f-desc').value.trim(),
+            category:q('#f-cat').value,docNo:q('#f-doc').value.trim(),invoiceId:st.type==='in'?(q('#f-inv').value||''):'',
+            fileIds:[...st.fileIds,...up.ids],updatedAt:Date.now()};
+          if(existing&&existing.type!==st.type)rec.ref=nextRef(st.type,payDate);
+          const log=logRec(existing?'geändert':'angelegt','entry',existing,rec);
+          await commit([...up.ops,['entries','put',rec],['meta','put',S.meta]],[...up.logs,...(existing&&!log.changes.length?[]:[log])]);
+          sh.close();render();toast(existing?'Änderungen gespeichert':(st.type==='in'?'Einnahme':'Ausgabe')+' über '+eur(amount)+' gespeichert');
+        }catch(err){console.error(err);toast('Speichern hat nicht geklappt: '+(err.message||err))}finally{done()}
+      };
+      if(!isNew)q('#del').onclick=async()=>{
+        if(!await confirmSheet('Eintrag löschen?',`${esc(labelOf('entry',existing))} über ${eur(existing.amount)} wird gelöscht. Verknüpfte Dateien bleiben erhalten. Die Löschung steht im Änderungsprotokoll.`))return;
+        await commit([['entries','delete',existing.id]],[logRec('gelöscht','entry',existing,null)]);sh.close();render();toast('Eintrag gelöscht');
+      };
+    }});
+}
+
+/* =========================================================
+   Invoice form
+   ========================================================= */
+function openInvoiceForm(existing){
+  const isNew=!existing;
+  const st={fileIds:[...(existing?.fileIds||[])],pending:[]};
+  const t=todayISO();
+  const v=existing||{number:nextInvoiceNo(),customer:'',issueDate:t,dueDate:addDays(t,14),amount:'',description:'',category:'Dienstleistungen',note:''};
+  const s=existing?invStatus(existing):null;
+  const pays=existing?sortEntries(S.entries.filter(e=>e.type==='in'&&e.invoiceId===existing.id)):[];
+  openSheet({title:isNew?'Rechnung anlegen':'Rechnung '+existing.number,
+    body:`<form id="if" novalidate style="display:flex;flex-direction:column;gap:14px">
+      ${s?`<div class="glass" style="padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">${stBadge(s)}<span class="num" style="font-weight:700">${eur(s.paid)} von ${eur(existing.amount)}</span></div>
+        <div class="progress" style="margin:0"><i style="width:${existing.amount?Math.min(100,s.paid/existing.amount*100):0}%"></i></div>
+        ${pays.length?`<div class="hist">${pays.map(p=>`<button type="button" class="h" data-openentry="${p.id}" style="text-align:left;color:inherit;display:flex;justify-content:space-between;gap:8px"><span>${fmtDate(p.payDate)} · ${esc(p.ref)}</span><b class="num">${eur(p.amount)}</b></button>`).join('')}</div>`:'<div class="info">Noch keine Zahlung zugeordnet.</div>'}
+        ${s.st!=='bezahlt'?`<button type="button" class="btn small" id="addpay" style="align-self:flex-start">${icon('plus')}Zahlung erfassen (offen ${eur(s.open)})</button>`:''}
+      </div>`:''}
+      <div class="grid2">
+        <div class="field"><label for="i-no">Rechnungsnummer</label><input class="inp" id="i-no" maxlength="60" value="${esc(v.number)}"></div>
+        <div class="field"><label for="i-amount">Betrag (brutto)</label><div class="money"><input class="inp" id="i-amount" inputmode="decimal" placeholder="0,00" value="${v.amount!==''?plain(v.amount):''}"><span>€</span></div></div>
+      </div>
+      <div class="field"><label for="i-cust">Kunde</label><input class="inp" id="i-cust" list="dl-cust" maxlength="120" value="${esc(v.customer)}" autocomplete="off"><datalist id="dl-cust">${partyOptions('in')}</datalist></div>
+      <div class="grid2">
+        <div class="field"><label for="i-date">Rechnungsdatum</label><input class="inp" type="date" id="i-date" value="${esc(v.issueDate)}"></div>
+        <div class="field"><label for="i-due">Fällig am</label><input class="inp" type="date" id="i-due" value="${esc(v.dueDate||'')}"></div>
+      </div>
+      <div class="field"><label for="i-desc">Leistung / Beschreibung</label><input class="inp" id="i-desc" maxlength="200" value="${esc(v.description)}"></div>
+      <div class="field"><label for="i-cat">Kategorie</label><select class="inp" id="i-cat">${catsFor('in').map(c=>`<option ${c===v.category?'selected':''}>${esc(c)}</option>`).join('')}</select></div>
+      <div class="field"><span class="lbl">Rechnungsdatei</span><div id="fb"></div></div>
+      <div class="field"><label for="i-note">Notiz</label><input class="inp" id="i-note" maxlength="300" value="${esc(v.note||'')}"></div>
+      ${isNew?'':historyHtml(existing.id)}
+      <div class="actions">${isNew?'':'<button type="button" class="btn danger" id="del">Löschen</button>'}<button type="submit" class="btn primary">${isNew?'Rechnung speichern':'Änderungen speichern'}</button></div>
+    </form>`,
+    onMount(el,sh){
+      const q=x=>el.querySelector(x);
+      const drawFiles=()=>{q('#fb').innerHTML=fileBlock(st,'rechnung');wireFileBlock(q('#fb'),st,'rechnung',drawFiles)};drawFiles();
+      q('#i-date').onchange=()=>{if(isNew)q('#i-due').value=addDays(q('#i-date').value,14)};
+      el.querySelectorAll('[data-openentry]').forEach(b=>b.onclick=()=>openEntryForm(entryById(b.dataset.openentry)));
+      if(q('#addpay'))q('#addpay').onclick=()=>{sh.close();openEntryForm(null,{type:'in',invoiceId:existing.id,party:existing.customer,docNo:existing.number,category:existing.category,description:existing.description||'Zahlung Rechnung '+existing.number,amount:s.open})};
+      q('#if').onsubmit=async ev=>{
+        ev.preventDefault();
+        const amount=parseMoney(q('#i-amount').value),number=q('#i-no').value.trim();
+        if(!number){toast('Bitte eine Rechnungsnummer eintragen');return}
+        if(S.invoices.some(i=>i.number===number&&i.id!==existing?.id)){toast('Diese Rechnungsnummer gibt es schon');return}
+        if(!(amount>0)){toast('Bitte den Rechnungsbetrag eintragen');return}
+        const done=busy('Speichere …');
+        try{
+          const up=await pendingToFiles(st.pending,q('#i-date').value);
+          const rec={...(existing||{id:uid('r'),createdAt:Date.now()}),number,customer:q('#i-cust').value.trim(),issueDate:q('#i-date').value||todayISO(),
+            dueDate:q('#i-due').value,amount,description:q('#i-desc').value.trim(),category:q('#i-cat').value,note:q('#i-note').value.trim(),fileIds:[...st.fileIds,...up.ids],updatedAt:Date.now()};
+          const log=logRec(existing?'geändert':'angelegt','invoice',existing,rec);
+          await commit([...up.ops,['invoices','put',rec]],[...up.logs,...(existing&&!log.changes.length?[]:[log])]);
+          sh.close();render();toast(existing?'Rechnung gespeichert':'Rechnung '+number+' angelegt');
+        }catch(err){console.error(err);toast('Speichern hat nicht geklappt: '+(err.message||err))}finally{done()}
+      };
+      if(!isNew)q('#del').onclick=async()=>{
+        const n=pays.length;
+        if(!await confirmSheet('Rechnung löschen?',`Rechnung ${esc(existing.number)} wird gelöscht.${n?` ${n} zugeordnete ${n===1?'Zahlung bleibt':'Zahlungen bleiben'} als Einnahme erhalten, aber ohne Rechnungsbezug.`:''} Dateien bleiben erhalten.`))return;
+        const ops=[['invoices','delete',existing.id]],logs=[logRec('gelöscht','invoice',existing,null)];
+        for(const p of pays){const np={...p,invoiceId:'',updatedAt:Date.now()};ops.push(['entries','put',np]);logs.push(logRec('geändert','entry',p,np))}
+        await commit(ops,logs);sh.close();render();toast('Rechnung gelöscht');
+      };
+    }});
+}
+
+/* =========================================================
+   Files: upload, detail, picker
+   ========================================================= */
+function uploadFlow(){
+  const inp=document.createElement('input');inp.type='file';inp.multiple=true;inp.accept='image/*,application/pdf,.pdf,.png,.jpg,.jpeg,.heic,.doc,.docx,.xls,.xlsx,.csv,.txt';
+  inp.onchange=()=>{const files=[...inp.files];if(files.length)uploadSheet(files)};inp.click();
+}
+function uploadSheet(files){
+  const items=files.map(f=>({tmp:uid('t'),file:f,kind:/auszug|statement|konto/i.test(f.name)?'auszug':/rechnung|invoice|re-?\d/i.test(f.name)?'rechnung':'beleg',date:todayISO()}));
+  openSheet({title:files.length===1?'Datei hochladen':files.length+' Dateien hochladen',
+    body:`<div class="info">Wähle für jede Datei die Art und das Datum des Dokuments. Zuordnen kannst du sie danach direkt oder später.</div>
+      <div class="list" style="padding:4px 12px">${items.map(p=>`<div class="fitem" style="padding:10px 0;border-top:1px solid var(--line);grid-template-columns:36px minmax(0,1fr)">
+        <span class="fi">${icon(p.file.type.startsWith('image/')?'img':'doc')}</span>
+        <span style="min-width:0;display:flex;flex-direction:column;gap:8px"><span><div class="fn">${esc(p.file.name)}</div><div class="fm">${fmtSize(p.file.size)}</div></span>
+          <span class="grid2" style="grid-template-columns:1fr 1fr"><select class="inp" data-k="${p.tmp}" aria-label="Dateiart">${Object.entries(KIND).map(([k,l])=>`<option value="${k}" ${p.kind===k?'selected':''}>${l}</option>`).join('')}</select>
+          <input class="inp" type="date" data-d="${p.tmp}" value="${p.date}" aria-label="Dokumentdatum"></span></span></div>`).join('')}</div>
+      <div class="actions"><button class="btn primary" id="go">Speichern</button></div>`,
+    onMount(el,sh){
+      el.querySelectorAll('[data-k]').forEach(s=>s.onchange=()=>{items.find(x=>x.tmp===s.dataset.k).kind=s.value});
+      el.querySelectorAll('[data-d]').forEach(s=>s.onchange=()=>{items.find(x=>x.tmp===s.dataset.d).date=s.value});
+      el.querySelector('#go').onclick=async()=>{
+        const done=busy('Lade hoch …');
+        try{
+          const ops=[],logs=[],ids=[];
+          for(const p of items){const r=await pendingToFiles([p],p.date||todayISO());ops.push(...r.ops);logs.push(...r.logs);ids.push(...r.ids)}
+          await commit(ops,logs);sh.close();render();
+          toast(ids.length===1?'Datei gespeichert':ids.length+' Dateien gespeichert');
+          if(ids.length===1)openFileDetail(ids[0]);
+        }catch(err){console.error(err);toast('Hochladen hat nicht geklappt: '+(err.message||err))}finally{done()}
+      };
+    }});
+}
+async function blobOf(id){const r=await DB.get('blobs',id);const f=fileById(id);if(!r)return null;return new Blob([r.data],{type:f?.type||'application/octet-stream'})}
+async function openFile(id){
+  const b=await blobOf(id),f=fileById(id);if(!b){toast('Datei nicht gefunden');return}
+  offerFile(b,f.name,'Datei öffnen');
+}
+function openFileDetail(id){
+  const f=fileById(id);if(!f)return;
+  const l=linksOf(id);let url=null;
+  openSheet({title:'Datei',
+    body:`<div class="preview" id="pv"><div class="ph">${icon(fileIcon(f))}<br>${esc(f.type||'Datei')} · ${fmtSize(f.size||0)}</div></div>
+      <div class="fbtns"><button class="btn small" id="open">${icon('down')}Öffnen / Sichern</button>
+        <button class="btn small" id="mkout">${icon('plus')}Als Ausgabe erfassen</button><button class="btn small" id="mkin">${icon('plus')}Als Einnahme erfassen</button></div>
+      <div class="field"><label for="d-name">Dateiname</label><input class="inp" id="d-name" value="${esc(f.name)}"></div>
+      <div class="grid2"><div class="field"><label for="d-kind">Art</label><select class="inp" id="d-kind">${Object.entries(KIND).map(([k,lb])=>`<option value="${k}" ${f.kind===k?'selected':''}>${lb}</option>`).join('')}</select></div>
+        <div class="field"><label for="d-date">Dokumentdatum</label><input class="inp" type="date" id="d-date" value="${esc(f.docDate)}"></div></div>
+      <div class="field"><label for="d-note">Notiz</label><input class="inp" id="d-note" value="${esc(f.note||'')}"></div>
+      <div class="field"><span class="lbl">Zugeordnet zu</span>
+        <div class="list">${l.entries.map(e=>`<button class="row" data-oe="${e.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="r-main"><span class="r-title" style="display:block">${esc(labelOf('entry',e))}</span><span class="r-sub" style="display:block">${fmtDate(e.payDate)}</span></span><span class="r-amt ${e.type}">${eur(e.amount)}</span></button>`).join('')}
+          ${l.invoices.map(i=>`<button class="row" data-oi="${i.id}" style="grid-template-columns:minmax(0,1fr) auto"><span class="r-main"><span class="r-title" style="display:block">${esc(labelOf('invoice',i))}</span><span class="r-sub" style="display:block">${fmtDate(i.issueDate)}</span></span><span class="r-amt">${eur(i.amount)}</span></button>`).join('')}
+          ${l.entries.length+l.invoices.length?'':'<div class="empty" style="padding:16px">Noch nicht zugeordnet</div>'}</div>
+        <button class="btn small" id="link" style="align-self:flex-start">${icon('link')}Mit Einträgen verknüpfen</button></div>
+      ${historyHtml(id)}
+      <div class="actions"><button class="btn danger" id="del">Löschen</button><button class="btn primary" id="save">Speichern</button></div>`,
+    async onMount(el,sh){
+      const q=x=>el.querySelector(x);
+      sh.close=(orig=>()=>{if(url)URL.revokeObjectURL(url);orig()})(sh.close);
+      if(f.type?.startsWith('image/')&&!/heic/i.test(f.type)){const b=await blobOf(id);if(b){url=URL.createObjectURL(b);q('#pv').innerHTML=`<img src="${url}" alt="${esc(f.name)}">`}}
+      q('#open').onclick=()=>openFile(id);
+      q('#mkout').onclick=()=>{sh.close();openEntryForm(null,{type:'out',fileIds:[id],payDate:f.docDate})};
+      q('#mkin').onclick=()=>{sh.close();openEntryForm(null,{type:'in',fileIds:[id],payDate:f.docDate})};
+      el.querySelectorAll('[data-oe]').forEach(b=>b.onclick=()=>{sh.close();openEntryForm(entryById(b.dataset.oe))});
+      el.querySelectorAll('[data-oi]').forEach(b=>b.onclick=()=>{sh.close();openInvoiceForm(invById(b.dataset.oi))});
+      q('#link').onclick=()=>pickTargets(id,()=>{sh.close();render();openFileDetail(id)});
+      q('#save').onclick=async()=>{
+        const rec={...f,name:q('#d-name').value.trim()||f.name,kind:q('#d-kind').value,docDate:q('#d-date').value||f.docDate,note:q('#d-note').value.trim()};
+        const log=logRec('geändert','file',f,rec);
+        if(log.changes.length)await commit([['files','put',rec]],[log]);
+        sh.close();render();toast('Datei gespeichert');
+      };
+      q('#del').onclick=async()=>{
+        const n=l.entries.length+l.invoices.length;
+        if(!await confirmSheet('Datei löschen?',`„${esc(f.name)}“ wird endgültig gelöscht${n?` und von ${n} ${n===1?'Eintrag':'Einträgen'} gelöst`:''}. Mach vorher eine Sicherung, wenn du die Datei noch brauchst.`))return;
+        const ops=[['files','delete',id],['blobs','delete',id]],logs=[logRec('gelöscht','file',f,null)];
+        for(const e of l.entries){const ne={...e,fileIds:e.fileIds.filter(x=>x!==id),updatedAt:Date.now()};ops.push(['entries','put',ne]);logs.push(logRec('geändert','entry',e,ne))}
+        for(const i of l.invoices){const ni={...i,fileIds:i.fileIds.filter(x=>x!==id),updatedAt:Date.now()};ops.push(['invoices','put',ni]);logs.push(logRec('geändert','invoice',i,ni))}
+        await commit(ops,logs);sh.close();render();toast('Datei gelöscht');
+      };
+    }});
+}
+function pickFiles(selected,cb){
+  const sel=new Set(selected);let q='';
+  openSheet({title:'Datei verknüpfen',body:`<input class="search" type="search" id="pq" placeholder="Dateien suchen …" aria-label="Dateien suchen"><div class="list" style="padding:0 12px"><div class="pick" id="pl"></div></div><div class="actions"><button class="btn primary" id="ok">Übernehmen</button></div>`,
+    onMount(el,sh){
+      const draw=()=>{const list=S.files.filter(f=>!q||f.name.toLowerCase().includes(q)).sort((a,b)=>a.docDate<b.docDate?1:-1);
+        el.querySelector('#pl').innerHTML=list.length?list.map(f=>{const n=linksOf(f.id);const c=n.entries.length+n.invoices.length;return `<label><input type="checkbox" value="${f.id}" ${sel.has(f.id)?'checked':''}><span style="min-width:0"><div class="fn" style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(f.name)}</div><div class="fm" style="font-size:.75rem;color:var(--muted)">${KIND[f.kind]} · ${fmtDate(f.docDate)}</div></span><span class="badge ${c?'':'warn'}">${c?c+'× zugeordnet':'frei'}</span></label>`}).join(''):'<div class="empty">Keine Dateien gefunden. Lade zuerst Dateien hoch.</div>';
+        el.querySelectorAll('#pl input').forEach(i=>i.onchange=()=>{i.checked?sel.add(i.value):sel.delete(i.value)})};
+      draw();el.querySelector('#pq').oninput=e=>{q=e.target.value.toLowerCase();draw()};
+      el.querySelector('#ok').onclick=()=>{sh.close();cb([...sel].filter(fileById))};
+    }});
+}
+function pickTargets(fileId,cb){
+  const l=linksOf(fileId);const selE=new Set(l.entries.map(e=>e.id)),selI=new Set(l.invoices.map(i=>i.id));let q='';
+  openSheet({title:'Mit Einträgen verknüpfen',body:`<input class="search" type="search" id="pq" placeholder="Suchen: Name, Nummer, Betrag …" aria-label="Einträge suchen"><div class="list" style="padding:0 12px"><div class="pick" id="pl"></div></div><div class="actions"><button class="btn primary" id="ok">Übernehmen</button></div>`,
+    onMount(el,sh){
+      const draw=()=>{
+        const invs=S.invoices.filter(i=>!q||[i.number,i.customer,plain(i.amount)].join(' ').toLowerCase().includes(q)).map(i=>({k:'i',id:i.id,t:labelOf('invoice',i),d:i.issueDate,a:i.amount}));
+        const ens=S.entries.filter(e=>!q||[e.ref,e.party,e.description,e.docNo,plain(e.amount)].join(' ').toLowerCase().includes(q)).map(e=>({k:'e',id:e.id,t:labelOf('entry',e),d:e.payDate,a:e.amount,type:e.type}));
+        const all=[...invs,...ens].sort((a,b)=>a.d<b.d?1:-1).slice(0,200);
+        el.querySelector('#pl').innerHTML=all.length?all.map(o=>`<label><input type="checkbox" data-k="${o.k}" value="${o.id}" ${(o.k==='i'?selI:selE).has(o.id)?'checked':''}><span style="min-width:0"><div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.t)}</div><div style="font-size:.75rem;color:var(--muted)">${fmtDate(o.d)}</div></span><span class="num" style="font-weight:700;${o.type?`color:var(--${o.type})`:''}">${eur(o.a)}</span></label>`).join(''):'<div class="empty">Keine Einträge gefunden.</div>';
+        el.querySelectorAll('#pl input').forEach(i=>i.onchange=()=>{const s=i.dataset.k==='i'?selI:selE;i.checked?s.add(i.value):s.delete(i.value)});
+      };
+      draw();el.querySelector('#pq').oninput=e=>{q=e.target.value.toLowerCase();draw()};
+      el.querySelector('#ok').onclick=async()=>{
+        const ops=[],logs=[];
+        for(const e of S.entries){const has=(e.fileIds||[]).includes(fileId),want=selE.has(e.id);if(has!==want){const ne={...e,fileIds:want?[...(e.fileIds||[]),fileId]:e.fileIds.filter(x=>x!==fileId),updatedAt:Date.now()};ops.push(['entries','put',ne]);logs.push(logRec('geändert','entry',e,ne))}}
+        for(const i of S.invoices){const has=(i.fileIds||[]).includes(fileId),want=selI.has(i.id);if(has!==want){const ni={...i,fileIds:want?[...(i.fileIds||[]),fileId]:i.fileIds.filter(x=>x!==fileId),updatedAt:Date.now()};ops.push(['invoices','put',ni]);logs.push(logRec('geändert','invoice',i,ni))}}
+        if(ops.length)await commit(ops,logs);sh.close();toast('Zuordnung gespeichert');cb();
+      };
+    }});
+}
+
+/* =========================================================
+   ZIP + XLSX + CSV writers
+   ========================================================= */
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRC_T[(c^u[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
+async function makeZip(items){
+  const enc=new TextEncoder(),parts=[],central=[];let off=0;
+  const d=new Date(),dtime=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1),ddate=((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+  for(const it of items){
+    const data=typeof it.data==='string'?enc.encode(it.data):it.data instanceof Blob?new Uint8Array(await it.data.arrayBuffer()):it.data instanceof ArrayBuffer?new Uint8Array(it.data):it.data;
+    const name=enc.encode(it.path),crc=crc32(data),len=data.length;
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,0,true);lh.setUint16(10,dtime,true);lh.setUint16(12,ddate,true);
+    lh.setUint32(14,crc,true);lh.setUint32(18,len,true);lh.setUint32(22,len,true);lh.setUint16(26,name.length,true);lh.setUint16(28,0,true);
+    parts.push(lh.buffer,name,data);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(10,0,true);ch.setUint16(12,dtime,true);ch.setUint16(14,ddate,true);
+    ch.setUint32(16,crc,true);ch.setUint32(20,len,true);ch.setUint32(24,len,true);ch.setUint16(28,name.length,true);ch.setUint32(42,off,true);
+    central.push(ch.buffer,name);off+=30+name.length+len;
+  }
+  const cdSize=central.reduce((s,p)=>s+(p.byteLength??p.length),0);
+  const eo=new DataView(new ArrayBuffer(22));eo.setUint32(0,0x06054b50,true);eo.setUint16(8,items.length,true);eo.setUint16(10,items.length,true);eo.setUint32(12,cdSize,true);eo.setUint32(16,off,true);
+  return new Blob([...parts,...central,eo.buffer],{type:'application/zip'});
+}
+async function readZip(blob){
+  const buf=new Uint8Array(await blob.arrayBuffer()),dv=new DataView(buf.buffer);let eo=-1;
+  for(let i=buf.length-22;i>=Math.max(0,buf.length-65557);i--)if(dv.getUint32(i,true)===0x06054b50){eo=i;break}
+  if(eo<0)throw new Error('Das ist keine ZIP-Datei.');
+  const count=dv.getUint16(eo+10,true),dec=new TextDecoder();let p=dv.getUint32(eo+16,true);const map=new Map();
+  for(let i=0;i<count;i++){
+    if(dv.getUint32(p,true)!==0x02014b50)throw new Error('ZIP-Datei ist beschädigt.');
+    const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),el=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),lo=dv.getUint32(p+42,true);
+    const name=dec.decode(buf.subarray(p+46,p+46+nl));p+=46+nl+el+cl;
+    const start=lo+30+dv.getUint16(lo+26,true)+dv.getUint16(lo+28,true);map.set(name,{method,raw:buf.subarray(start,start+csize)});
+  }
+  return {names:[...map.keys()],async get(n){const e=map.get(n);if(!e)return null;if(e.method===0)return e.raw.slice();
+    if(e.method===8){if(typeof DecompressionStream==='undefined')throw new Error('Dieser Browser kann komprimierte ZIPs nicht lesen.');
+      return new Uint8Array(await new Response(new Blob([e.raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer())}
+    throw new Error('Unbekannte ZIP-Komprimierung.')}};
+}
+const xe=s=>String(s).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const colName=i=>{let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s};
+const xlDate=iso=>(Date.UTC(+iso.slice(0,4),+iso.slice(5,7)-1,+iso.slice(8,10))-Date.UTC(1899,11,30))/864e5;
+// cell: string | number | {v, s:'money'|'date'|'head'|'bold'|'boldmoney'|'title'}
+function makeXlsx(sheets){
+  const STY={head:1,money:2,date:3,boldmoney:4,title:5,bold:6};
+  const files=[];
+  sheets.forEach((sh,si)=>{
+    let x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">';
+    x+=sh.freeze?'<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>':'<sheetViews><sheetView workbookViewId="0"/></sheetViews>';
+    if(sh.widths)x+='<cols>'+sh.widths.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('')+'</cols>';
+    x+='<sheetData>';
+    sh.rows.forEach((row,ri)=>{
+      x+=`<row r="${ri+1}">`;
+      row.forEach((c,ci)=>{
+        let v=c,s=0;if(c&&typeof c==='object'){v=c.v;s=STY[c.s]||0;if(c.s==='date'&&v)v=xlDate(v)}
+        if(v==null||v==='')return;const ref=colName(ci)+(ri+1);
+        x+=typeof v==='number'?`<c r="${ref}" s="${s}"><v>${v}</v></c>`:`<c r="${ref}" s="${s}" t="inlineStr"><is><t xml:space="preserve">${xe(v)}</t></is></c>`;
+      });
+      x+='</row>';
+    });
+    x+='</sheetData></worksheet>';
+    files.push({path:`xl/worksheets/sheet${si+1}.xml`,data:x});
+  });
+  const names=sheets.map(s=>s.name.replace(/[\[\]:*?\/\\]/g,'').slice(0,31));
+  files.push(
+    {path:'[Content_Types].xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`},
+    {path:'_rels/.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
+    {path:'xl/workbook.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${names.map((n,i)=>`<sheet name="${xe(n)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets></workbook>`},
+    {path:'xl/_rels/workbook.xml.rels',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`},
+    {path:'xl/styles.xml',data:`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="2"><numFmt numFmtId="164" formatCode="#,##0.00\\ &quot;€&quot;"/><numFmt numFmtId="165" formatCode="dd\\.mm\\.yyyy"/></numFmts><fonts count="3"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="14"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFD8F0FA"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="7"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="164" fontId="1" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/><xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Standard" xfId="0" builtinId="0"/></cellStyles></styleSheet>`}
+  );
+  return makeZip(files).then(b=>new Blob([b],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+}
+function makeCsv(rows){
+  const cell=c=>{let v=c&&typeof c==='object'?(c.s==='date'?fmtDate(c.v):c.s&&/money/.test(c.s)?(typeof c.v==='number'?c.v.toFixed(2).replace('.',','):c.v):c.v):c;
+    if(typeof v==='number')v=String(v).replace('.',',');v=String(v??'');if(/^[=+\-@]/.test(v)&&!/^-?\d/.test(v))v="'"+v;
+    return /[;"\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  return new Blob(['﻿'+rows.map(r=>r.map(cell).join(';')).join('\r\n')],{type:'text/csv;charset=utf-8'});
+}
+
+/* =========================================================
+   Export data builders
+   ========================================================= */
+const safeName=s=>String(s).normalize('NFC').replace(/[\/\\:*?"<>|\x00-\x1F]/g,'_').replace(/\s+/g,' ').trim().slice(0,120)||'Datei';
+function filePaths(){ // stable, unique path for every file (same in every export)
+  const map=new Map(),used=new Set();
+  for(const f of [...S.files].sort((a,b)=>(a.addedAt||'').localeCompare(b.addedAt||'')||a.id.localeCompare(b.id))){
+    const dir=KIND_DIR[f.kind]||'Sonstiges';let base=`${f.docDate||'ohne-Datum'}_${safeName(f.name)}`;
+    const dot=base.lastIndexOf('.');const stem=dot>0?base.slice(0,dot):base,ext=dot>0?base.slice(dot):'';
+    let p=`${dir}/${base}`,n=2;while(used.has(p.toLowerCase()))p=`${dir}/${stem}_${n++}${ext}`;
+    used.add(p.toLowerCase());map.set(f.id,p);
+  }
+  return map;
+}
+function entryTable(type,range,paths){
+  const isIn=type==='in';
+  const list=entriesIn(type,range).sort((a,b)=>a.payDate===b.payDate?(a.createdAt||0)-(b.createdAt||0):a.payDate<b.payDate?-1:1);
+  const head=['Lfd. Nr.','Zahlungsdatum','Betrag (€)',isIn?'Kunde':'Anbieter','Beschreibung','Kategorie',isIn?'Rechnungsnr.':'Belegnr.',...(isIn?['Zugehörige Rechnung']:[]),isIn?'Rechnung vorhanden':'Beleg vorhanden','Kontoauszug','Dateien (Pfad im ZIP)'].map(h=>({v:h,s:'head'}));
+  const rows=list.map(e=>{const inv=invById(e.invoiceId);const fp=filesOf(e).map(f=>paths.get(f.id));if(inv)fp.push(...filesOf(inv).map(f=>paths.get(f.id)+' (über Rechnung)'));
+    return [e.ref||'',{v:e.payDate,s:'date'},{v:e.amount/100,s:'money'},e.party||'',e.description||'',e.category||'',e.docNo||'',...(isIn?[inv?inv.number:'']:[]),hasBeleg(e)?'ja':'FEHLT',hasAuszug(e)?'ja':'nein',fp.join(' | ')]});
+  const total=sumOf(list);
+  rows.push([{v:'Summe',s:'bold'},'',{v:total/100,s:'boldmoney'}]);
+  return {rows:[head,...rows],count:list.length,total,widths:[13,13,13,26,34,26,16,...(isIn?[18]:[]),15,12,60]};
+}
+function invoiceTable(range,paths){
+  const list=S.invoices.filter(i=>inRange(i.issueDate,range)).sort((a,b)=>a.issueDate<b.issueDate?-1:1);
+  const head=['Rechnungsnr.','Rechnungsdatum','Fällig am','Kunde','Leistung','Kategorie','Betrag (€)','Bezahlt (€)','Offen (€)','Status','Zahlungen','Datei (Pfad im ZIP)'].map(h=>({v:h,s:'head'}));
+  const rows=list.map(i=>{const s=invStatus(i);const pays=sortEntries(S.entries.filter(e=>e.type==='in'&&e.invoiceId===i.id)).reverse();
+    return [i.number,{v:i.issueDate,s:'date'},i.dueDate?{v:i.dueDate,s:'date'}:'',i.customer||'',i.description||'',i.category||'',{v:i.amount/100,s:'money'},{v:s.paid/100,s:'money'},{v:s.open/100,s:'money'},
+      s.overdue?'überfällig':ST_LABEL[s.st],pays.map(p=>fmtDate(p.payDate)+': '+plain(p.amount)+' € ('+p.ref+')').join(' | '),filesOf(i).map(f=>paths.get(f.id)).join(' | ')||'FEHLT']});
+  rows.push([{v:'Summe',s:'bold'},'','','','','',{v:sumOf(list)/100,s:'boldmoney'},{v:list.reduce((a,i)=>a+invStatus(i).paid,0)/100,s:'boldmoney'},{v:list.reduce((a,i)=>a+invStatus(i).open,0)/100,s:'boldmoney'}]);
+  return {rows:[head,...rows],count:list.length,list,widths:[15,14,12,26,32,22,13,13,13,12,50,50]};
+}
+function summarySheet(range,label){
+  const ins=entriesIn('in',range),outs=entriesIn('out',range),si=sumOf(ins),so=sumOf(outs);
+  const rows=[[{v:'icyanina Studio · Einnahmen-Überschuss-Übersicht '+label,s:'title'}],
+    ['Zeitraum: '+fmtDate(range[0])+' bis '+fmtDate(range[1])+' · nach Zahlungsdatum · Kleinunternehmerin § 19 UStG (Bruttobeträge, keine USt)'],[],
+    [{v:'Summen',s:'head'},{v:'Betrag (€)',s:'head'}],
+    ['Betriebseinnahmen',{v:si/100,s:'money'}],['Betriebsausgaben',{v:so/100,s:'money'}],[{v:'Überschuss / Verlust',s:'bold'},{v:(si-so)/100,s:'boldmoney'}],[]];
+  const y0=+range[0].slice(0,4),y1=+range[1].slice(0,4);
+  rows.push([{v:'Monat',s:'head'},{v:'Einnahmen (€)',s:'head'},{v:'Ausgaben (€)',s:'head'},{v:'Differenz (€)',s:'head'}]);
+  for(let y=y0;y<=y1&&y-y0<20;y++)for(let m=1;m<=12;m++){
+    const r=rangeOf({mode:'month',y,m});const rr=[r[0]<range[0]?range[0]:r[0],r[1]>range[1]?range[1]:r[1]];if(rr[0]>rr[1])continue;
+    const a=sumOf(entriesIn('in',rr)),b=sumOf(entriesIn('out',rr));rows.push([MONTHS[m-1]+' '+y,{v:a/100,s:'money'},{v:b/100,s:'money'},{v:(a-b)/100,s:'money'}]);
+  }
+  const cat=(arr,t)=>{const m=new Map();for(const e of arr)m.set(e.category||'Ohne Kategorie',(m.get(e.category||'Ohne Kategorie')||0)+e.amount);
+    rows.push([],[{v:t,s:'head'},{v:'Betrag (€)',s:'head'},{v:'Anzahl',s:'head'}]);
+    for(const [c,v] of [...m].sort((a,b)=>b[1]-a[1]))rows.push([c,{v:v/100,s:'money'},arr.filter(e=>(e.category||'Ohne Kategorie')===c).length]);
+    rows.push([{v:'Gesamt',s:'bold'},{v:sumOf(arr)/100,s:'boldmoney'},arr.length])};
+  cat(ins,'Einnahmen nach Kategorie');cat(outs,'Ausgaben nach Kategorie');
+  const openInv=S.invoices.filter(i=>i.issueDate<=range[1]).map(i=>({i,s:invStatus(i)})).filter(x=>x.s.st!=='bezahlt');
+  rows.push([],[{v:'Offene Forderungen (nicht in den Einnahmen enthalten)',s:'head'},{v:'Offen (€)',s:'head'}]);
+  for(const {i,s} of openInv)rows.push([i.number+' · '+(i.customer||''),{v:s.open/100,s:'money'}]);
+  if(!openInv.length)rows.push(['Keine']);
+  const missing=[...ins,...outs].filter(e=>!hasBeleg(e));
+  rows.push([],[{v:'Einträge ohne Beleg / Rechnung',s:'head'},{v:'Betrag (€)',s:'head'}]);
+  for(const e of missing)rows.push([e.ref+' · '+fmtDate(e.payDate)+' · '+(e.party||''),{v:e.amount/100,s:'money'}]);
+  if(!missing.length)rows.push(['Keine, alles belegt']);
+  rows.push([],['Erstellt am '+fmtDT(Date.now())+' mit der icyanina Studio App. Grundlage für die Anlage EÜR, keine Steuerberatung.']);
+  return {name:'Jahresübersicht',rows,widths:[52,16,16,16]};
+}
+function logCsv(range){
+  const rows=[['Zeitpunkt','Aktion','Objekt','Feld','Vorher','Nachher']];
+  for(const l of [...S.log].reverse()){if(range&&!inRange(l.ts.slice(0,10),[range[0],'9999-12-31']))continue;
+    if(!l.changes.length)rows.push([fmtDT(l.ts),l.action,l.label,'','','']);
+    for(const c of l.changes)rows.push([fmtDT(l.ts),l.action,l.label,c.f,c.from,c.to]);}
+  return makeCsv(rows);
+}
+function filesForDocs(range){ // Belege, Kontoauszüge, Sonstiges for entries in range + unlinked files dated in range
+  const ids=new Set();
+  for(const e of S.entries)if(inRange(e.payDate,range))for(const f of filesOf(e))if(f.kind!=='rechnung')ids.add(f.id);
+  for(const f of S.files){const l=linksOf(f.id);if(f.kind!=='rechnung'&&!l.entries.length&&!l.invoices.length&&inRange(f.docDate,range))ids.add(f.id)}
+  return [...ids].map(fileById);
+}
+function filesForInvoices(range){
+  const ids=new Set();
+  for(const i of S.invoices)if(inRange(i.issueDate,range))for(const f of filesOf(i))ids.add(f.id);
+  for(const e of S.entries)if(e.type==='in'&&inRange(e.payDate,range))for(const f of filesOf(e))if(f.kind==='rechnung')ids.add(f.id);
+  for(const f of S.files){const l=linksOf(f.id);if(f.kind==='rechnung'&&!l.entries.length&&!l.invoices.length&&inRange(f.docDate,range))ids.add(f.id)}
+  return [...ids].map(fileById);
+}
+async function filesToZipItems(files,paths,root){
+  const out=[];for(const f of files){const r=await DB.get('blobs',f.id);if(r)out.push({path:root+paths.get(f.id),data:r.data})}return out;
+}
+const tag=range=>range[0].slice(0,4)===range[1].slice(0,4)&&range[0].endsWith('-01-01')&&range[1].endsWith('-12-31')?range[0].slice(0,4):range[0]+'_bis_'+range[1];
+
+async function runExport(kind,range,format){
+  const paths=filePaths(),t=tag(range);
+  if(kind==='in'||kind==='out'){
+    const name=kind==='in'?'Einnahmen':'Ausgaben';const tb=entryTable(kind,range,paths);
+    if(!tb.count)throw new Error(`Keine ${name} im gewählten Zeitraum.`);
+    const blob=format==='csv'?makeCsv(tb.rows):await makeXlsx([{name,rows:tb.rows,widths:tb.widths,freeze:true}]);
+    return {blob,name:`icyanina-Studio_${name}_${t}.${format==='csv'?'csv':'xlsx'}`};
+  }
+  if(kind==='invoices'){
+    const files=filesForInvoices(range);const tb=invoiceTable(range,paths);
+    if(!files.length&&!tb.count)throw new Error('Keine Rechnungen im gewählten Zeitraum.');
+    const root=`icyanina-Studio_Rechnungen_${t}/`;
+    const items=[...await filesToZipItems(files,paths,root),{path:root+'Rechnungsliste.xlsx',data:await makeXlsx([{name:'Rechnungen',rows:tb.rows,widths:tb.widths,freeze:true}])}];
+    return {blob:await makeZip(items),name:`icyanina-Studio_Rechnungen_${t}.zip`,info:`${files.length} Rechnungsdateien und eine Rechnungsliste`};
+  }
+  if(kind==='docs'){
+    const files=filesForDocs(range);if(!files.length)throw new Error('Keine Belege oder Kontoauszüge im gewählten Zeitraum.');
+    const root=`icyanina-Studio_Belege_${t}/`;
+    const tb=entryTable('out',range,paths);
+    const items=[...await filesToZipItems(files,paths,root),{path:root+'Ausgaben_Belegliste.xlsx',data:await makeXlsx([{name:'Ausgaben',rows:tb.rows,widths:tb.widths,freeze:true}])}];
+    return {blob:await makeZip(items),name:`icyanina-Studio_Belege_${t}.zip`,info:`${files.length} Belege und Kontoauszüge plus Belegliste`};
+  }
+  if(kind==='year'){
+    const root=`icyanina-Studio_Jahrespaket_${t}/`;
+    const tin=entryTable('in',range,paths),tout=entryTable('out',range,paths),tinv=invoiceTable(range,paths),sum=summarySheet(range,t.replace('_bis_',' bis '));
+    const files=[...new Map([...filesForInvoices(range),...filesForDocs(range)].map(f=>[f.id,f])).values()];
+    for(const e of S.entries)if(e.type==='in'&&inRange(e.payDate,range)&&e.invoiceId){const inv=invById(e.invoiceId);if(inv)for(const f of filesOf(inv))if(!files.includes(f))files.push(f)}
+    const readme=`icyanina Studio · Jahrespaket ${t}\r\nErstellt am ${fmtDT(Date.now())}\r\n\r\nInhalt\r\n- Buchhaltung_${t}.xlsx: Jahresübersicht, Einnahmen, Ausgaben, Rechnungen (je ein Tabellenblatt)\r\n- Einnahmen_${t}.csv und Ausgaben_${t}.csv: dieselben Listen als CSV\r\n- Rechnungen/: Ausgangsrechnungen (Originaldateien)\r\n- Belege/: Ausgabenbelege (Originaldateien)\r\n- Kontoauszuege/: zugeordnete Kontoauszüge\r\n- Sonstiges/: weitere Dateien\r\n- Aenderungsprotokoll.csv: alle Änderungen an Einträgen und Dateien\r\n\r\nIn der Spalte „Dateien (Pfad im ZIP)“ steht zu jedem Eintrag der Pfad der zugehörigen Originaldatei in diesem Ordner.\r\nAlle Beträge sind Bruttobeträge (Kleinunternehmerin nach § 19 UStG, keine Umsatzsteuer).\r\nEinnahmen und Ausgaben sind nach dem tatsächlichen Zahlungsdatum zugeordnet (Zufluss-/Abflussprinzip).\r\n`;
+    const items=[
+      {path:root+`Buchhaltung_${t}.xlsx`,data:await makeXlsx([sum,{name:'Einnahmen',rows:tin.rows,widths:tin.widths,freeze:true},{name:'Ausgaben',rows:tout.rows,widths:tout.widths,freeze:true},{name:'Rechnungen',rows:tinv.rows,widths:tinv.widths,freeze:true}])},
+      {path:root+`Einnahmen_${t}.csv`,data:makeCsv(tin.rows)},{path:root+`Ausgaben_${t}.csv`,data:makeCsv(tout.rows)},
+      {path:root+'Aenderungsprotokoll.csv',data:logCsv()},{path:root+'LIESMICH.txt',data:readme},
+      ...await filesToZipItems(files,paths,root)];
+    return {blob:await makeZip(items),name:`icyanina-Studio_Jahrespaket_${t}.zip`,info:`${tin.count} Einnahmen, ${tout.count} Ausgaben, ${tinv.count} Rechnungen, ${files.length} Originaldateien`};
+  }
+}
+function openExport(kind){
+  const y=new Date().getFullYear(),m=new Date().getMonth()+1;
+  let range;
+  if(kind==='in'||kind==='out'){const p=ui.per[kind];range=p.mode==='all'?[firstDate(),todayISO()]:rangeOf(p)}
+  else if(kind==='year')range=rangeOf({mode:'year',y:ui.ov.y});
+  else range=rangeOf({mode:'year',y});
+  const T={in:'Einnahmen exportieren',out:'Ausgaben exportieren',invoices:'Rechnungen als ZIP',docs:'Belege & Kontoauszüge als ZIP',year:'Jahrespaket'}[kind];
+  const D={in:'Liste aller Einnahmen mit Dateipfaden.',out:'Liste aller Ausgaben mit Dateipfaden.',invoices:'Alle Ausgangsrechnungen als Originaldateien plus Rechnungsliste. Gefiltert nach Rechnungsdatum.',
+    docs:'Alle Ausgabenbelege und Kontoauszüge der Buchungen im Zeitraum, plus Belegliste.',year:'Tabellen (Excel + CSV), Jahresübersicht, alle Originaldateien und das Änderungsprotokoll in einer ZIP-Datei.'}[kind];
+  const pm=m===1?{y:y-1,m:12}:{y,m:m-1};
+  const presets=[['Dieser Monat',rangeOf({mode:'month',y,m})],['Letzter Monat',rangeOf({mode:'month',...pm})],['Dieses Jahr',rangeOf({mode:'year',y})],['Letztes Jahr',rangeOf({mode:'year',y:y-1})],['Alles',[firstDate(),todayISO()]]];
+  openSheet({title:T,body:`<p class="info" style="margin:0">${D}</p>
+    <div class="field"><span class="lbl">Zeitraum</span><div class="presets">${presets.map((p,i)=>`<button type="button" class="chip" data-pre="${i}">${p[0]}</button>`).join('')}</div></div>
+    <div class="grid2"><div class="field"><label for="x-from">Von</label><input class="inp" type="date" id="x-from" value="${range[0]}"></div><div class="field"><label for="x-to">Bis</label><input class="inp" type="date" id="x-to" value="${range[1]}"></div></div>
+    ${kind==='in'||kind==='out'?`<div class="field"><span class="lbl">Format</span><div class="radios"><label><input type="radio" name="fmt" value="xlsx" checked>Excel (.xlsx)</label><label><input type="radio" name="fmt" value="csv">CSV</label></div></div>`:''}
+    <div class="actions"><button class="btn primary" id="go">${icon('down')}Export erstellen</button></div>`,
+    onMount(el,sh){
+      const mark=()=>el.querySelectorAll('[data-pre]').forEach(b=>{const p=presets[b.dataset.pre][1];b.setAttribute('aria-pressed',p[0]===el.querySelector('#x-from').value&&p[1]===el.querySelector('#x-to').value)});
+      el.querySelectorAll('[data-pre]').forEach(b=>b.onclick=()=>{const p=presets[b.dataset.pre][1];el.querySelector('#x-from').value=p[0];el.querySelector('#x-to').value=p[1];mark()});
+      el.querySelectorAll('input[type=date]').forEach(i=>i.onchange=mark);mark();
+      el.querySelector('#go').onclick=async()=>{
+        const a=el.querySelector('#x-from').value,b=el.querySelector('#x-to').value;
+        if(!a||!b||a>b){toast('Bitte einen gültigen Zeitraum wählen');return}
+        const fmt=el.querySelector('input[name=fmt]:checked')?.value||'xlsx';
+        const done=busy('Erstelle Export …');
+        try{const r=await runExport(kind,[a,b],fmt);done();sh.close();offerFile(r.blob,r.name,'Export fertig',r.info)}
+        catch(err){done();console.error(err);toast(err.message||'Export hat nicht geklappt')}
+      };
+    }});
+}
+function firstDate(){const d=[...S.entries.map(e=>e.payDate),...S.invoices.map(i=>i.issueDate),...S.files.map(f=>f.docDate)].filter(Boolean).sort()[0];return d||todayISO().slice(0,4)+'-01-01'}
+
+/* ---------- hand a file to the person ---------- */
+function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.rel='noopener';document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},60000)}
+function offerFile(blob,name,title,info){
+  const touch=matchMedia('(pointer:coarse)').matches;
+  const file=new File([blob],name,{type:blob.type||'application/octet-stream'});
+  const canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
+  const isImg=(blob.type||'').startsWith('image/')||blob.type==='application/pdf';
+  openSheet({title,body:`<div class="ready"><span class="fileico">${icon(/zip/.test(blob.type)?'zip':'doc')}</span><b>${esc(name)}</b><span class="info">${fmtSize(blob.size)}${info?' · '+esc(info):''}</span></div>
+    ${IS_PREVIEW?'<p class="info" style="text-align:center">In der Vorschau sind Downloads gesperrt. In deiner installierten App wird die Datei hier gespeichert.</p>':''}
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${canShare&&touch?`<button class="btn primary block" id="share">${icon('down')}Sichern oder teilen</button><button class="btn block" id="dl">Herunterladen</button>`
+        :`<button class="btn primary block" id="dl">${icon('down')}Herunterladen</button>${canShare?'<button class="btn block" id="share">Teilen</button>':''}`}
+      ${isImg?`<button class="btn block" id="view">Im Browser ansehen</button>`:''}
+    </div>
+    <p class="info" style="text-align:center;margin:0">Auf dem iPhone: „In Dateien sichern“ wählen, z. B. in iCloud Drive.</p>`,
+    onMount(el){
+      el.querySelector('#dl')&&(el.querySelector('#dl').onclick=()=>{if(IS_PREVIEW){toast('In der Vorschau nicht möglich');return}downloadBlob(blob,name)});
+      el.querySelector('#share')&&(el.querySelector('#share').onclick=()=>{if(IS_PREVIEW){toast('In der Vorschau nicht möglich');return}navigator.share({files:[file],title:name}).catch(err=>{if(err?.name!=='AbortError')downloadBlob(blob,name)})});
+      el.querySelector('#view')&&(el.querySelector('#view').onclick=()=>{const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},120000)});
+    }});
+}
+
+/* =========================================================
+   Backup / restore / settings
+   ========================================================= */
+async function buildBackup(){
+  const stamp=todayISO(),root=`icyanina-Studio_Sicherung_${stamp}/`;
+  const data={app:'icyanina-studio-buchhaltung',version:1,createdAt:new Date().toISOString(),entries:S.entries,invoices:S.invoices,files:S.files,log:S.log,meta:S.meta};
+  const items=[{path:root+'daten.json',data:JSON.stringify(data,null,1)},{path:root+'LIESMICH.txt',data:'Sicherung der icyanina Studio App.\r\nZum Wiederherstellen in der App: Zahnrad → „Sicherung wiederherstellen“ und diese ZIP-Datei wählen.\r\nDer Ordner dateien/ enthält alle Originaldateien, daten.json alle Einträge, Zuordnungen und das Änderungsprotokoll.\r\n'}];
+  for(const f of S.files){const r=await DB.get('blobs',f.id);if(r)items.push({path:root+'dateien/'+f.id,data:r.data})}
+  return {blob:await makeZip(items),name:`icyanina-Studio_Sicherung_${stamp}.zip`};
+}
+async function makeBackup(){
+  const done=busy('Erstelle Sicherung …');
+  try{
+    const {blob,name}=await buildBackup();
+    S.meta.lastBackup=new Date().toISOString();await saveMeta();
+    done();render();offerFile(blob,name,'Sicherung fertig',`${S.entries.length} Buchungen, ${S.invoices.length} Rechnungen, ${S.files.length} Dateien`);
+  }catch(err){done();console.error(err);toast('Sicherung hat nicht geklappt: '+(err.message||err))}
+}
+async function restoreBackup(file){
+  let z,data,prefix;
+  try{z=await readZip(file);const dj=z.names.find(n=>/(^|\/)daten\.json$/.test(n)&&!n.startsWith('__MACOSX'));if(!dj)throw new Error('In dieser ZIP-Datei ist keine Sicherung der App.');
+    prefix=dj.slice(0,-'daten.json'.length);data=JSON.parse(new TextDecoder().decode(await z.get(dj)));
+    if(data.app!=='icyanina-studio-buchhaltung')throw new Error('Diese Datei ist keine icyanina Studio Sicherung.');}
+  catch(err){toast(err.message||'Sicherung konnte nicht gelesen werden');return}
+  const ok=await confirmSheet('Sicherung wiederherstellen?',`Sicherung vom ${fmtDT(data.createdAt)} mit ${data.entries.length} Buchungen, ${data.invoices.length} Rechnungen und ${data.files.length} Dateien.<br><br><b>Alle aktuellen Daten in der App werden dabei ersetzt.</b>`,'Wiederherstellen');
+  if(!ok)return;
+  const done=busy('Stelle wieder her …');
+  try{
+    const ops=STORES.map(s=>[s,'clear']);
+    let missing=0;
+    for(const f of data.files){const u=await z.get(prefix+'dateien/'+f.id);if(u)ops.push(['blobs','put',{id:f.id,data:u.buffer.slice(u.byteOffset,u.byteOffset+u.byteLength)}]);else missing++}
+    for(const e of data.entries)ops.push(['entries','put',e]);for(const i of data.invoices)ops.push(['invoices','put',i]);for(const f of data.files)ops.push(['files','put',f]);
+    for(const l of data.log||[])ops.push(['log','put',l]);
+    ops.push(['meta','put',{...data.meta,k:'settings'}]);
+    const rl={id:uid('l'),ts:new Date().toISOString(),action:'wiederhergestellt',objType:'backup',objId:'',label:'Sicherung vom '+fmtDT(data.createdAt),changes:[]};
+    ops.push(['log','put',rl]);
+    await DB.write(ops);await loadAll();done();render();
+    toast(missing?`Wiederhergestellt, aber ${missing} Dateien fehlten in der Sicherung`:'Sicherung wiederhergestellt');
+  }catch(err){done();console.error(err);toast('Wiederherstellen hat nicht geklappt: '+(err.message||err))}
+}
+async function openSettings(){
+  let est='';try{const e=await navigator.storage?.estimate?.();if(e)est=fmtSize(e.usage||0)+' belegt'}catch(_){}
+  let persisted=null;try{persisted=await navigator.storage?.persisted?.()}catch(_){}
+  openSheet({title:'Sicherung & Einstellungen',body:`
+    <section class="glass" style="padding:16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:12px;align-items:center">${icon('shield','')}<div><b>Daten sichern</b><div class="info">${S.meta.lastBackup?'Letzte Sicherung: '+fmtDT(S.meta.lastBackup):'Noch keine Sicherung erstellt'}</div></div></div>
+      <p class="info" style="margin:0">Die Sicherung ist eine ZIP-Datei mit allen Einträgen, Rechnungen, Originaldateien, Zuordnungen und dem Änderungsprotokoll. Speicher sie in iCloud Drive oder „Dateien“.</p>
+      <div class="fbtns"><button class="btn primary" id="bk">${icon('down')}Sicherung erstellen</button><label class="btn">Sicherung wiederherstellen<input type="file" accept=".zip,application/zip" hidden id="rs"></label></div>
+      <div class="info">${S.entries.length} Buchungen · ${S.invoices.length} Rechnungen · ${S.files.length} Dateien${est?' · '+est:''}${persisted?' · Dauerhafter Speicher aktiv':''}</div>
+    </section>
+    <div class="field"><span class="lbl">Eigene Kategorien</span>
+      <div class="grid2"><select class="inp" id="ct" aria-label="Für"><option value="out">Ausgaben</option><option value="in">Einnahmen</option></select><input class="inp" id="cn" placeholder="Neue Kategorie" maxlength="50"></div>
+      <button class="btn small" id="cadd" style="align-self:flex-start">${icon('plus')}Kategorie hinzufügen</button>
+      <div class="chips" style="flex-wrap:wrap" id="clist"></div></div>
+    <div class="field"><span class="lbl">Änderungsprotokoll</span>
+      <div class="hist" id="loglist"></div>
+      <button class="btn small" id="logx" style="align-self:flex-start">${icon('down')}Protokoll als CSV</button></div>
+    <p class="info">Wichtig auf dem iPhone: Öffne die App immer über das Icon auf dem Home-Bildschirm. Safari und die Home-Bildschirm-App haben getrennte Speicher. Kleinunternehmerin nach § 19 UStG: Alle Beträge ohne Umsatzsteuer.</p>`,
+    onMount(el,sh){
+      el.querySelector('#bk').onclick=()=>{sh.close();makeBackup()};
+      el.querySelector('#rs').onchange=e=>{const f=e.target.files[0];e.target.value='';if(f){sh.close();restoreBackup(f)}};
+      const drawCats=()=>{el.querySelector('#clist').innerHTML=['in','out'].flatMap(t=>(S.meta.customCats[t]||[]).map(c=>`<button class="chip" data-rm="${t}|${esc(c)}">${t==='in'?'E':'A'} · ${esc(c)} ✕</button>`)).join('')||'<span class="info">Noch keine eigenen Kategorien.</span>';
+        el.querySelectorAll('[data-rm]').forEach(b=>b.onclick=async()=>{const [t,...c]=b.dataset.rm.split('|');S.meta.customCats[t]=S.meta.customCats[t].filter(x=>x!==c.join('|'));await saveMeta();drawCats()})};
+      drawCats();
+      el.querySelector('#cadd').onclick=async()=>{const t=el.querySelector('#ct').value,n=el.querySelector('#cn').value.trim();if(!n)return;if(catsFor(t).includes(n)){toast('Gibt es schon');return}
+        S.meta.customCats[t]=[...(S.meta.customCats[t]||[]),n];await saveMeta();el.querySelector('#cn').value='';drawCats();toast('Kategorie hinzugefügt')};
+      el.querySelector('#loglist').innerHTML=S.log.slice(0,40).map(l=>`<div class="h"><b>${esc(l.label)}</b> · ${esc(l.action)} · ${fmtDT(l.ts)}${l.changes.slice(0,4).map(c=>`<span class="ch">${esc(c.f)}: ${l.action==='geändert'?esc(c.from)+' → '+esc(c.to):esc(c.to||c.from)}</span>`).join('')}</div>`).join('')||'<div class="info">Noch keine Änderungen.</div>';
+      el.querySelector('#logx').onclick=()=>offerFile(logCsv(),'icyanina-Studio_Aenderungsprotokoll_'+todayISO()+'.csv','Protokoll');
+    }});
+}
+
+/* =========================================================
+   Global actions
+   ========================================================= */
+const ACT={
+  tab:b=>setTab(b.dataset.tab),
+  settings:()=>openSettings(),
+  backup:()=>makeBackup(),
+  'new-entry':b=>openEntryForm(null,{type:b.dataset.type}),
+  'edit-entry':b=>openEntryForm(entryById(b.dataset.id)),
+  'new-invoice':()=>openInvoiceForm(null),
+  'edit-invoice':b=>openInvoiceForm(invById(b.dataset.id)),
+  'edit-file':b=>openFileDetail(b.dataset.id),
+  upload:()=>uploadFlow(),
+  export:b=>openExport(b.dataset.kind),
+  fab:()=>({in:()=>openEntryForm(null,{type:'in'}),out:()=>openEntryForm(null,{type:'out'}),inv:()=>openInvoiceForm(null),files:uploadFlow}[ui.tab]||(()=>{}))(),
+  goinv:()=>{ui.filter.inv='all';setTab('inv')},
+  goov:b=>{ui.ov.mode=b.dataset.mode||'year';ui.ov.y=new Date().getFullYear();ui.ov.m=new Date().getMonth()+1;setTab('ov')},
+  gomiss:b=>{const t=b.dataset.type;ui.filter[t]='miss';ui.per[t].mode='all';setTab(t)},
+  permode:b=>{ui.per[b.dataset.key].mode=b.dataset.v;render()},
+  perstep:b=>{const p=ui.per[b.dataset.key],d=+b.dataset.d;if(p.mode==='year')p.y+=d;else{p.m+=d;if(p.m<1){p.m=12;p.y--}if(p.m>12){p.m=1;p.y++}}render()},
+  filter:b=>{ui.filter[b.dataset.key]=b.dataset.v;render()},
+  ovmode:b=>{ui.ov.mode=b.dataset.v;render()},
+  ovstep:b=>{const o=ui.ov,d=+b.dataset.d;if(o.mode==='year')o.y+=d;else{o.m+=d;if(o.m<1){o.m=12;o.y--}if(o.m>12){o.m=1;o.y++}}render()},
+  ovmonth:b=>{ui.ov.mode='month';ui.ov.m=+b.dataset.m;render();window.scrollTo({top:0})}
+};
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  if(b.closest('.sheet')&&!b.dataset.act)return;
+  const f=ACT[b.dataset.act];if(f){e.preventDefault();f(b)}
+});
+let qT;document.addEventListener('input',e=>{
+  const el=e.target;if(el.dataset.input!=='q')return;ui.q[el.dataset.key]=el.value;clearTimeout(qT);
+  qT=setTimeout(()=>{const r=$('#results');if(!r)return;r.innerHTML=el.dataset.key==='files'?filesResults():entriesResults(el.dataset.key)},150);
+});
+
+/* =========================================================
+   Ocean backdrop: sunlit caustic light + glitter
+   ========================================================= */
+(function sea(){
+  const c=$('#sea'),x=c.getContext('2d');let w,h,t=0,last=0,raf;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  let blobs=[],stars=[];
+  function size(){const s=0.5;w=c.width=Math.round(innerWidth*s);h=c.height=Math.round(innerHeight*s);
+    blobs=Array.from({length:14},()=>({x:rnd(0,w),y:rnd(0,h),r:rnd(w*.1,w*.26),p:rnd(0,6.28)}));
+    stars=Array.from({length:Math.round(w*h/1100)},()=>({x:rnd(0,w),y:rnd(0,h),s:rnd(.5,1.5),p:rnd(0,6.28),f:rnd(.6,2.2),big:Math.random()<.06}))}
+  function frame(ts){
+    raf=requestAnimationFrame(frame);if(ts-last<40&&!reduce)return;last=ts;t+=.016;
+    x.clearRect(0,0,w,h);
+    for(const b of blobs){const bx=b.x+Math.sin(t*.3+b.p)*w*.05,by=b.y+Math.cos(t*.25+b.p)*h*.03;
+      const g=x.createRadialGradient(bx,by,0,bx,by,b.r);const a=.22+.1*Math.sin(t*.8+b.p);
+      g.addColorStop(0,`rgba(255,255,255,${a})`);g.addColorStop(.6,`rgba(250,238,210,${a*.35})`);g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.beginPath();x.arc(bx,by,b.r,0,7);x.fill()}
+    // caustic net: bright wavy lines like sunlight on a pool floor
+    x.lineWidth=1.2;for(let k=0;k<9;k++){x.beginPath();const yb=h*(.05+k*.11);
+      for(let i=0;i<=w;i+=6){const y=yb+Math.sin(i*.025+t*(.7+k*.12)+k*1.7)*6+Math.sin(i*.009-t*.5+k)*10;i?x.lineTo(i,y):x.moveTo(i,y)}
+      x.strokeStyle=`rgba(255,251,240,${.30-k*.022})`;x.stroke()}
+    for(const s of stars){const a=Math.max(0,Math.sin(t*s.f+s.p));if(a<.05)continue;
+      x.fillStyle=`rgba(170,130,60,${a*.2})`;x.beginPath();x.arc(s.x,s.y,s.s*2.2,0,7);x.fill();
+      x.fillStyle=`rgba(255,255,255,${a})`;x.beginPath();x.arc(s.x,s.y,s.s*(.7+a*.5),0,7);x.fill();
+      if(s.big&&a>.6){x.strokeStyle=`rgba(255,255,255,${(a-.6)*2.4})`;x.lineWidth=1;x.beginPath();x.moveTo(s.x-6,s.y);x.lineTo(s.x+6,s.y);x.moveTo(s.x,s.y-6);x.lineTo(s.x,s.y+6);x.stroke()}}
+    if(reduce)cancelAnimationFrame(raf);
+  }
+  size();addEventListener('resize',()=>{size()});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf);else raf=requestAnimationFrame(frame)});
+  raf=requestAnimationFrame(frame);
+})();
+
+/* =========================================================
+   Boot
+   ========================================================= */
+(async function boot(){
+  try{
+    await DB.open(IS_PREVIEW?'icyanina-studio-vorschau':'icyanina-studio');
+    await loadAll();
+    if(IS_PREVIEW&&window.STUDIO_SEED&&!S.entries.length)await window.STUDIO_SEED();
+  }catch(err){console.error(err);$('#view').innerHTML=`<div class="list empty"><b>Speicher nicht verfügbar</b>Die App kann hier keine Daten speichern (privates Surfen?). ${esc(err.message||'')}</div>`;return}
+  render();
+})();
+</script>
+</body>
+</html>
